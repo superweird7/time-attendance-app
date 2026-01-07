@@ -1,0 +1,206 @@
+<Window x:Class="ZKTecoManager.AddEditLocationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="إضافة موقع" Height="500" Width="450"
+        WindowStartupLocation="CenterOwner"
+        Background="Transparent"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        ResizeMode="NoResize"
+        FlowDirection="RightToLeft">
+
+    <Window.Resources>
+        <Style x:Key="FormLabel" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#374151"/>
+            <Setter Property="Margin" Value="0,0,0,5"/>
+        </Style>
+
+        <Style x:Key="FormTextBox" TargetType="TextBox">
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+            <Setter Property="BorderBrush" Value="#D1D5DB"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="White"/>
+            <Style.Triggers>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="#667EEA"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="FormPasswordBox" TargetType="PasswordBox">
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+            <Setter Property="BorderBrush" Value="#D1D5DB"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="White"/>
+        </Style>
+
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="20,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="8" Background="#667EEA">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#5568D3"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SecondaryButton" TargetType="Button">
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#374151"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#D1D5DB"/>
+            <Setter Property="Padding" Value="20,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="8" Background="White" BorderBrush="#D1D5DB" BorderThickness="1">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#F3F4F6"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SuccessButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="8" Background="#10B981">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#059669"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="WinBtn" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Width" Value="35"/>
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#40FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Border CornerRadius="15" Background="White">
+            <Border.Effect>
+                <DropShadowEffect Color="#000000" Opacity="0.3" ShadowDepth="5" BlurRadius="20"/>
+            </Border.Effect>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="60"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="70"/>
+                </Grid.RowDefinitions>
+
+                <!-- Header -->
+                <Border Grid.Row="0" CornerRadius="15,15,0,0" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="#667EEA" Offset="0"/>
+                            <GradientStop Color="#764BA2" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+
+                    <Grid>
+                        <TextBlock x:Name="TitleText" Text="إضافة موقع جديد" FontSize="18" FontWeight="Bold"
+                                   Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <Button Content="✕" Style="{StaticResource WinBtn}" Click="CloseButton_Click"
+                                HorizontalAlignment="Left" Margin="10,0"/>
+                    </Grid>
+                </Border>
+
+                <!-- Form -->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="25,20">
+                    <StackPanel>
+                        <TextBlock Text="اسم الموقع *" Style="{StaticResource FormLabel}"/>
+                        <TextBox x:Name="LocationNameTextBox" Style="{StaticResource FormTextBox}"/>
+
+                        <TextBlock Text="عنوان الخادم (Host) *" Style="{StaticResource FormLabel}"/>
+                        <TextBox x:Name="HostTextBox" Style="{StaticResource FormTextBox}" Text="localhost"/>
+
+                        <TextBlock Text="المنفذ (Port)" Style="{StaticResource FormLabel}"/>
+                        <TextBox x:Name="PortTextBox" Style="{StaticResource FormTextBox}" Text="5432"/>
+
+                        <TextBlock Text="اسم قاعدة البيانات *" Style="{StaticResource FormLabel}"/>
+                        <TextBox x:Name="DatabaseTextBox" Style="{StaticResource FormTextBox}" Text="zkteco_db"/>
+
+                        <TextBlock Text="اسم المستخدم *" Style="{StaticResource FormLabel}"/>
+                        <TextBox x:Name="UsernameTextBox" Style="{StaticResource FormTextBox}" Text="postgres"/>
+
+                        <TextBlock Text="كلمة المرور *" Style="{StaticResource FormLabel}"/>
+                        <PasswordBox x:Name="PasswordBox" Style="{StaticResource FormPasswordBox}"/>
+
+                        <CheckBox x:Name="IsActiveCheckBox" Content="نشط" IsChecked="True"
+                                  FontSize="13" Margin="0,5,0,0"/>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Footer -->
+                <Border Grid.Row="2" Background="#F9FAFB" CornerRadius="0,0,15,15">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Button Content="🔗 اختبار الاتصال" Style="{StaticResource PrimaryButton}"
+                                Click="TestConnection_Click" Margin="0,0,10,0"/>
+                        <Button Content="حفظ" Style="{StaticResource SuccessButton}"
+                                Click="SaveButton_Click" Margin="0,0,10,0" Width="59"/>
+                        <Button Content="إلغاء" Style="{StaticResource SecondaryButton}"
+                                Click="CancelButton_Click" Width="53"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

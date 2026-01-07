@@ -1,0 +1,257 @@
+================================================================================
+                    برنامج البصمة - Installation Guide
+                         دليل تثبيت برنامج البصمة
+================================================================================
+
+REQUIREMENTS (المتطلبات)
+================================================================================
+
+1. Operating System (نظام التشغيل):
+   - Windows 7 SP1 or later (32-bit or 64-bit)
+   - Windows 10/11 recommended
+
+2. .NET Framework:
+   - .NET Framework 4.7.2 or later
+   - Download: https://dotnet.microsoft.com/download/dotnet-framework/net472
+
+3. PostgreSQL Database:
+   - PostgreSQL 12 or later
+   - Download: https://www.postgresql.org/download/windows/
+
+4. ZKTeco SDK (for device communication):
+   - zkemkeeper.dll (included in installation files)
+   - ZKFPEngXControl (included in installation files)
+
+
+================================================================================
+STEP 1: Install .NET Framework 4.7.2
+================================================================================
+
+1. Check if already installed:
+   - Open Control Panel > Programs > Programs and Features
+   - Look for "Microsoft .NET Framework 4.7.2" or higher
+
+2. If not installed:
+   - Download from: https://dotnet.microsoft.com/download/dotnet-framework/net472
+   - Run the installer
+   - Restart computer if prompted
+
+
+================================================================================
+STEP 2: Install PostgreSQL
+================================================================================
+
+1. Download PostgreSQL:
+   - Go to: https://www.postgresql.org/download/windows/
+   - Download the installer (recommended: version 15 or 16)
+
+2. Run the installer:
+   - Choose installation directory (default is fine)
+   - Select components:
+     [x] PostgreSQL Server
+     [x] pgAdmin 4
+     [x] Command Line Tools
+   - Set password for 'postgres' user (REMEMBER THIS PASSWORD!)
+   - Keep default port: 5432
+   - Keep default locale
+
+3. Complete installation and restart if needed
+
+
+================================================================================
+STEP 3: Create Database
+================================================================================
+
+Option A: Using pgAdmin (Recommended)
+--------------------------------------
+1. Open pgAdmin 4 from Start Menu
+2. Connect to PostgreSQL server (enter your password)
+3. Right-click "Databases" > Create > Database
+4. Enter database name: zkteco_db
+5. Click Save
+
+Option B: Using Command Line
+--------------------------------------
+1. Open Command Prompt as Administrator
+2. Run:
+   "C:\Program Files\PostgreSQL\16\bin\psql.exe" -U postgres
+3. Enter your password
+4. Run:
+   CREATE DATABASE zkteco_db;
+   \q
+
+
+================================================================================
+STEP 4: Register ZKTeco COM Libraries
+================================================================================
+
+1. Copy these files to C:\Windows\SysWOW64\ (for 64-bit Windows):
+   - zkemkeeper.dll
+
+2. Open Command Prompt as Administrator
+
+3. Register the DLL:
+   regsvr32 "C:\Windows\SysWOW64\zkemkeeper.dll"
+
+4. You should see "DllRegisterServer succeeded" message
+
+Note: If you have RegisterCOM.bat in the Release folder, you can run it
+      as Administrator instead.
+
+
+================================================================================
+STEP 5: Copy Application Files
+================================================================================
+
+1. Create application folder:
+   C:\Program Files\برنامج البصمة\
+
+   OR
+
+   C:\برنامج البصمة\
+
+2. Copy ALL files from:
+   ZKTecoManager\bin\x86\Release\
+
+   To your application folder
+
+3. Required files (must be present):
+   - برنامج البصمة.exe (main application)
+   - برنامج البصمة.exe.config (configuration)
+   - Npgsql.dll (database driver)
+   - itextsharp.dll (PDF generation)
+   - All other .dll files in the folder
+
+
+================================================================================
+STEP 6: Configure Database Connection
+================================================================================
+
+1. Open: برنامج البصمة.exe.config with Notepad
+
+2. Find the connection string section:
+   <connectionStrings>
+     <add name="PostgreSQL"
+          connectionString="Host=localhost;Port=5432;Database=zkteco_db;Username=postgres;Password=YOUR_PASSWORD" />
+   </connectionStrings>
+
+3. Replace YOUR_PASSWORD with your PostgreSQL password
+
+4. Save the file
+
+
+================================================================================
+STEP 7: First Run - Initialize Database
+================================================================================
+
+1. Run: برنامج البصمة.exe
+
+2. The application will automatically:
+   - Create all required database tables
+   - Initialize default data
+   - Create default admin user
+
+3. Default login credentials:
+   Username: admin
+   Password: admin
+
+   *** IMPORTANT: Change the password after first login! ***
+
+
+================================================================================
+STEP 8: Create Desktop Shortcut (Optional)
+================================================================================
+
+1. Right-click on: برنامج البصمة.exe
+2. Select "Create shortcut"
+3. Move shortcut to Desktop
+4. Rename to: برنامج البصمة
+
+
+================================================================================
+TROUBLESHOOTING (حل المشاكل)
+================================================================================
+
+Problem: "Could not load file or assembly 'Npgsql'"
+Solution: Make sure all DLL files are in the same folder as the EXE
+
+Problem: "Connection to database failed"
+Solution:
+  1. Check PostgreSQL service is running (services.msc)
+  2. Verify password in config file
+  3. Check firewall allows port 5432
+
+Problem: "zkemkeeper not registered"
+Solution:
+  1. Run Command Prompt as Administrator
+  2. regsvr32 "C:\Windows\SysWOW64\zkemkeeper.dll"
+
+Problem: "This application requires .NET Framework 4.7.2"
+Solution: Download and install .NET Framework 4.7.2 from Microsoft
+
+Problem: Application won't start (no error)
+Solution:
+  1. Check Windows Event Viewer for errors
+  2. Try running as Administrator
+  3. Make sure all DLL files are present
+
+
+================================================================================
+BACKUP CONFIGURATION (إعدادات النسخ الاحتياطي)
+================================================================================
+
+After first login:
+
+1. Go to: Admin Panel > Backup Settings
+2. Configure:
+   - Enable Auto Backup: Yes
+   - Backup Time: 10:00 (or preferred time)
+   - Retention Days: 30
+   - Server Backup Path: \\SERVER\Backups\ (optional)
+
+Backups are saved to: [App Folder]\Backups\
+
+
+================================================================================
+NETWORK INSTALLATION (تثبيت الشبكة)
+================================================================================
+
+For multi-PC setup with shared database:
+
+1. Install PostgreSQL on ONE server PC
+2. Configure PostgreSQL to accept remote connections:
+
+   a. Edit pg_hba.conf:
+      Add: host all all 192.168.1.0/24 md5
+
+   b. Edit postgresql.conf:
+      Set: listen_addresses = '*'
+
+   c. Restart PostgreSQL service
+
+3. On client PCs:
+   - Install only the application (Steps 1, 4, 5, 6)
+   - In config file, change Host=localhost to Host=SERVER_IP
+
+
+================================================================================
+UNINSTALLATION (إلغاء التثبيت)
+================================================================================
+
+1. Delete application folder
+2. (Optional) Unregister COM:
+   regsvr32 /u "C:\Windows\SysWOW64\zkemkeeper.dll"
+3. (Optional) Remove database:
+   DROP DATABASE zkteco_db;
+
+
+================================================================================
+SUPPORT (الدعم)
+================================================================================
+
+For technical support, please contact the development team.
+
+
+================================================================================
+                         Copyright © 2025 - برنامج البصمة
+================================================================================

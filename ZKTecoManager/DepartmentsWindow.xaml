@@ -1,0 +1,367 @@
+﻿<Window x:Class="ZKTecoManager.DepartmentsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="إدارة الأقسام - Department Management" Height="600" Width="900"
+        WindowStartupLocation="CenterOwner"
+        Background="Transparent"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        ResizeMode="NoResize"
+        FlowDirection="RightToLeft">
+
+    <Window.Resources>
+        <!-- Primary Button (Blue) -->
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontFamily" Value="Segoe UI, Tahoma, Arial"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="20,0"/>
+            <Setter Property="Margin" Value="10,0,0,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="10">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#667EEA" Offset="0"/>
+                                    <GradientStop Color="#764BA2" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Border.Effect>
+                                <DropShadowEffect Color="#667EEA" Opacity="0.3" ShadowDepth="0" BlurRadius="10"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                            <GradientStop Color="#5568D3" Offset="0"/>
+                                            <GradientStop Color="#6A3E8F" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Edit Button (Orange) -->
+        <Style x:Key="EditButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="10">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#F59E0B" Offset="0"/>
+                                    <GradientStop Color="#D97706" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Border.Effect>
+                                <DropShadowEffect Color="#F59E0B" Opacity="0.3" ShadowDepth="0" BlurRadius="10"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                            <GradientStop Color="#DC8B05" Offset="0"/>
+                                            <GradientStop Color="#B45309" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Delete Button (Red) -->
+        <Style x:Key="DeleteButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="10">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#EF4444" Offset="0"/>
+                                    <GradientStop Color="#DC2626" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Border.Effect>
+                                <DropShadowEffect Color="#EF4444" Opacity="0.3" ShadowDepth="0" BlurRadius="10"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                            <GradientStop Color="#DC2626" Offset="0"/>
+                                            <GradientStop Color="#B91C1C" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Window Control Button -->
+        <Style x:Key="WinBtn" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#40FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- DataGrid Style -->
+        <Style x:Key="ModernDataGrid" TargetType="DataGrid">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="RowHeight" Value="45"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontFamily" Value="Segoe UI, Tahoma, Arial"/>
+            <Setter Property="AlternatingRowBackground" Value="#F8F9FA"/>
+            <Setter Property="HorizontalGridLinesBrush" Value="#E5E7EB"/>
+        </Style>
+
+        <!-- DataGrid Column Header -->
+        <Style x:Key="ModernColumnHeader" TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#F3F4F6"/>
+            <Setter Property="Foreground" Value="#1F2937"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="15,12"/>
+            <Setter Property="BorderThickness" Value="0,0,0,2"/>
+            <Setter Property="BorderBrush" Value="#E5E7EB"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+
+        <!-- DataGrid Cell -->
+        <Style x:Key="ModernCell" TargetType="DataGridCell">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="15,10"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridCell">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#E3F2FD"/>
+                    <Setter Property="Foreground" Value="#1F2937"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- DataGrid Row -->
+        <Style x:Key="ModernRow" TargetType="DataGridRow">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#F5F9FC"/>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#E3F2FD"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Border CornerRadius="15" Background="White">
+        <Border.Effect>
+            <DropShadowEffect Color="#1F2937" Opacity="0.2" ShadowDepth="5" BlurRadius="20"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="70"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Gradient Header -->
+            <Border Grid.Row="0" CornerRadius="15,15,0,0" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                        <GradientStop Color="#667EEA" Offset="0"/>
+                        <GradientStop Color="#764BA2" Offset="0.5"/>
+                        <GradientStop Color="#F093FB" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+
+                <Grid>
+                    <!-- Title -->
+                    <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Left"
+                                Margin="25,0"
+                                FlowDirection="LeftToRight">
+                        <TextBlock Text="🏢" FontSize="24" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                        <TextBlock Text="إدارة الأقسام"
+                                   FontSize="20"
+                                   FontWeight="Bold"
+                                   Foreground="White"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- Close Button -->
+                    <Button Style="{StaticResource WinBtn}"
+                            Content="✕"
+                            Click="CloseButton_Click"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Margin="15,0"
+                            FlowDirection="LeftToRight"/>
+                </Grid>
+            </Border>
+
+            <!-- Main Content -->
+            <Grid Grid.Row="1" Margin="30,25,30,30">
+                <Grid.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#F9FAFB" Offset="0"/>
+                        <GradientStop Color="#F3F4F6" Offset="1"/>
+                    </LinearGradientBrush>
+                </Grid.Background>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Action Buttons -->
+                <StackPanel Grid.Row="0" 
+                            x:Name="ActionButtonsPanel" 
+                            Orientation="Horizontal" 
+                            Margin="10,0,10,20"
+                            HorizontalAlignment="Right"
+                            Visibility="Collapsed">
+                    <Button Style="{StaticResource PrimaryButton}"
+                            Click="AddDepartment_Click"
+                            Margin="0,0,0,0">
+                        <TextBlock>
+                            <Run Text="➕ "/>
+                            <Run Text="إضافة قسم"/>
+                        </TextBlock>
+                    </Button>
+
+                    <Button Style="{StaticResource EditButton}"
+                            Click="EditDepartment_Click">
+                        <TextBlock>
+                            <Run Text="✏️ "/>
+                            <Run Text="تعديل قسم"/>
+                        </TextBlock>
+                    </Button>
+
+                    <Button Style="{StaticResource DeleteButton}"
+                            Click="DeleteDepartment_Click">
+                        <TextBlock>
+                            <Run Text="🗑️ "/>
+                            <Run Text="حذف قسم"/>
+                        </TextBlock>
+                    </Button>
+                </StackPanel>
+
+                <!-- Department List -->
+                <Border Grid.Row="1" 
+                        Background="White" 
+                        CornerRadius="12"
+                        Margin="10">
+                    <Border.Effect>
+                        <DropShadowEffect Color="#667EEA" Opacity="0.08" ShadowDepth="2" BlurRadius="12"/>
+                    </Border.Effect>
+
+                    <Grid>
+                        <!-- DataGrid Header -->
+                        <Border Background="#F3F4F6" 
+                                CornerRadius="12,12,0,0" 
+                                Height="50"
+                                VerticalAlignment="Top"
+                                Padding="20,0">
+                            <StackPanel Orientation="Horizontal" 
+                                        HorizontalAlignment="Right" 
+                                        VerticalAlignment="Center">
+                                <TextBlock Text="📋" FontSize="18" Margin="0,0,10,0"/>
+                                <TextBlock Text="قائمة الأقسام" 
+                                           FontSize="15" 
+                                           FontWeight="SemiBold" 
+                                           Foreground="#1F2937"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- DataGrid -->
+                        <DataGrid x:Name="DepartmentsGrid" 
+                                  Style="{StaticResource ModernDataGrid}"
+                                  ColumnHeaderStyle="{StaticResource ModernColumnHeader}"
+                                  CellStyle="{StaticResource ModernCell}"
+                                  RowStyle="{StaticResource ModernRow}"
+                                  AutoGenerateColumns="False" 
+                                  IsReadOnly="True" 
+                                  SelectionMode="Single"
+                                  Margin="0,50,0,0">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="الرقم" Binding="{Binding DeptId}" Width="80"/>
+                                <DataGridTextColumn Header="اسم القسم" Binding="{Binding DeptName}" Width="*"/>
+                                <DataGridTemplateColumn Header="عدد الموظفين" Width="120">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Border Background="#E8F5E9" CornerRadius="12" Padding="8,4" HorizontalAlignment="Center">
+                                                <TextBlock Text="{Binding EmployeeCount}"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="#2E7D32"
+                                                           HorizontalAlignment="Center"/>
+                                            </Border>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Header="مدير القسم" Binding="{Binding HeadName}" Width="150"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

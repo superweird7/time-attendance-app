@@ -1,0 +1,297 @@
+<Window x:Class="ZKTecoManager.SystemHealthWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="صحة النظام - System Health" Height="600" Width="800"
+        WindowStartupLocation="CenterOwner"
+        Background="Transparent"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        ResizeMode="NoResize"
+        FlowDirection="RightToLeft">
+
+    <Window.Resources>
+        <!-- Window Control Button -->
+        <Style x:Key="WinBtn" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#40FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Refresh Button -->
+        <Style x:Key="RefreshButton" TargetType="Button">
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="20,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="10">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#10B981" Offset="0"/>
+                                    <GradientStop Color="#059669" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                            <GradientStop Color="#0EA06E" Offset="0"/>
+                                            <GradientStop Color="#047857" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Border CornerRadius="15" Background="White">
+        <Border.Effect>
+            <DropShadowEffect Color="#1F2937" Opacity="0.2" ShadowDepth="5" BlurRadius="20"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Border Grid.Row="0" CornerRadius="15,15,0,0" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                        <GradientStop Color="#667EEA" Offset="0"/>
+                        <GradientStop Color="#764BA2" Offset="0.5"/>
+                        <GradientStop Color="#F093FB" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+
+                <Grid>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="25,0" FlowDirection="LeftToRight">
+                        <TextBlock Text="💊" FontSize="22" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                        <TextBlock Text="صحة النظام" FontSize="18" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15,0" FlowDirection="LeftToRight">
+                        <Button Content="✕" Style="{StaticResource WinBtn}" Click="CloseButton_Click"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Content -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="25">
+                <StackPanel>
+                    <!-- Database Connection Status -->
+                    <Border Background="#F0FDF4" CornerRadius="12" Padding="20" Margin="0,0,0,15">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Background="#D1FAE5" Width="50" Height="50" CornerRadius="12" Margin="0,0,15,0">
+                                <TextBlock Text="🗄️" FontSize="26" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Text="اتصال قاعدة البيانات" FontSize="16" FontWeight="SemiBold" Foreground="#1F2937"/>
+                                <TextBlock x:Name="DatabaseStatusText" Text="جاري الفحص..." FontSize="13" Foreground="#6B7280" Margin="0,5,0,0"/>
+                            </StackPanel>
+
+                            <Border Grid.Column="2" x:Name="DatabaseStatusBadge" Background="#D1FAE5" CornerRadius="8" Padding="15,8" VerticalAlignment="Center">
+                                <TextBlock x:Name="DatabaseStatusBadgeText" Text="..." FontWeight="Bold" FontSize="14" Foreground="#10B981"/>
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <!-- Device Status -->
+                    <Border Background="#EFF6FF" CornerRadius="12" Padding="20" Margin="0,0,0,15">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Background="#DBEAFE" Width="50" Height="50" CornerRadius="12" Margin="0,0,15,0">
+                                <TextBlock Text="📱" FontSize="26" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Text="حالة الأجهزة" FontSize="16" FontWeight="SemiBold" Foreground="#1F2937"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <TextBlock x:Name="TotalDevicesText" Text="0" FontSize="13" Foreground="#3B82F6" FontWeight="Bold"/>
+                                    <TextBlock Text=" جهاز - " FontSize="13" Foreground="#6B7280"/>
+                                    <TextBlock x:Name="OnlineDevicesText" Text="0" FontSize="13" Foreground="#10B981" FontWeight="Bold"/>
+                                    <TextBlock Text=" متصل, " FontSize="13" Foreground="#6B7280"/>
+                                    <TextBlock x:Name="OfflineDevicesText" Text="0" FontSize="13" Foreground="#EF4444" FontWeight="Bold"/>
+                                    <TextBlock Text=" غير متصل" FontSize="13" Foreground="#6B7280"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <Border Grid.Column="2" x:Name="DeviceStatusBadge" Background="#DBEAFE" CornerRadius="8" Padding="15,8" VerticalAlignment="Center">
+                                <TextBlock x:Name="DeviceStatusBadgeText" Text="..." FontWeight="Bold" FontSize="14" Foreground="#3B82F6"/>
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <!-- Last Backup -->
+                    <Border Background="#FEF3C7" CornerRadius="12" Padding="20" Margin="0,0,0,15">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Background="#FDE68A" Width="50" Height="50" CornerRadius="12" Margin="0,0,15,0">
+                                <TextBlock Text="💾" FontSize="26" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Text="آخر نسخ احتياطي" FontSize="16" FontWeight="SemiBold" Foreground="#1F2937"/>
+                                <TextBlock x:Name="LastBackupText" Text="جاري الفحص..." FontSize="13" Foreground="#6B7280" Margin="0,5,0,0"/>
+                            </StackPanel>
+
+                            <Border Grid.Column="2" x:Name="BackupStatusBadge" Background="#FDE68A" CornerRadius="8" Padding="15,8" VerticalAlignment="Center">
+                                <TextBlock x:Name="BackupStatusBadgeText" Text="..." FontWeight="Bold" FontSize="14" Foreground="#D97706"/>
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <!-- Last Log Download -->
+                    <Border Background="#F3E8FF" CornerRadius="12" Padding="20" Margin="0,0,0,15">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Background="#E9D5FF" Width="50" Height="50" CornerRadius="12" Margin="0,0,15,0">
+                                <TextBlock Text="📥" FontSize="26" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Text="آخر تحميل سجلات" FontSize="16" FontWeight="SemiBold" Foreground="#1F2937"/>
+                                <TextBlock x:Name="LastLogDownloadText" Text="جاري الفحص..." FontSize="13" Foreground="#6B7280" Margin="0,5,0,0"/>
+                            </StackPanel>
+
+                            <Border Grid.Column="2" x:Name="LogDownloadStatusBadge" Background="#E9D5FF" CornerRadius="8" Padding="15,8" VerticalAlignment="Center">
+                                <TextBlock x:Name="LogDownloadStatusBadgeText" Text="..." FontWeight="Bold" FontSize="14" Foreground="#8B5CF6"/>
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <!-- Disk Space -->
+                    <Border Background="#FEE2E2" CornerRadius="12" Padding="20" Margin="0,0,0,15">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Background="#FECACA" Width="50" Height="50" CornerRadius="12" Margin="0,0,15,0">
+                                <TextBlock Text="💿" FontSize="26" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Text="مساحة القرص" FontSize="16" FontWeight="SemiBold" Foreground="#1F2937"/>
+                                <TextBlock x:Name="DiskSpaceText" Text="جاري الفحص..." FontSize="13" Foreground="#6B7280" Margin="0,5,0,0"/>
+                                <ProgressBar x:Name="DiskSpaceProgress" Height="8" Margin="0,8,0,0" Value="0" Maximum="100">
+                                    <ProgressBar.Style>
+                                        <Style TargetType="ProgressBar">
+                                            <Setter Property="Foreground" Value="#10B981"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Value, Converter={x:Null}}" Value="True">
+                                                    <Setter Property="Foreground" Value="#EF4444"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ProgressBar.Style>
+                                </ProgressBar>
+                            </StackPanel>
+
+                            <Border Grid.Column="2" x:Name="DiskStatusBadge" Background="#FECACA" CornerRadius="8" Padding="15,8" VerticalAlignment="Center">
+                                <TextBlock x:Name="DiskStatusBadgeText" Text="..." FontWeight="Bold" FontSize="14" Foreground="#EF4444"/>
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <!-- System Info -->
+                    <Border Background="#F3F4F6" CornerRadius="12" Padding="20" Margin="0,0,0,15">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Background="#E5E7EB" Width="50" Height="50" CornerRadius="12" Margin="0,0,15,0">
+                                <TextBlock Text="🖥️" FontSize="26" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Text="معلومات النظام" FontSize="16" FontWeight="SemiBold" Foreground="#1F2937"/>
+                                <TextBlock x:Name="SystemInfoText" Text="جاري الفحص..." FontSize="13" Foreground="#6B7280" Margin="0,5,0,0"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Refresh Button -->
+                    <Button Style="{StaticResource RefreshButton}"
+                            Click="RefreshButton_Click"
+                            HorizontalAlignment="Center"
+                            Width="200"
+                            Margin="0,10,0,0">
+                        <TextBlock>
+                            <Run Text="🔄 "/>
+                            <Run Text="تحديث المعلومات"/>
+                        </TextBlock>
+                    </Button>
+
+                    <!-- Last Check Time -->
+                    <TextBlock x:Name="LastCheckTimeText"
+                               Text="آخر فحص: --"
+                               FontSize="12"
+                               Foreground="#9CA3AF"
+                               HorizontalAlignment="Center"
+                               Margin="0,10,0,0"/>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Border>
+</Window>

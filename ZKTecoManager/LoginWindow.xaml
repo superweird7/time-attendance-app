@@ -1,0 +1,360 @@
+﻿<Window x:Class="ZKTecoManager.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="تسجيل الدخول - برنامج البصمة" Height="680" Width="480"
+        Icon="app_logo.png"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None" 
+        AllowsTransparency="True" 
+        ResizeMode="NoResize"
+        Background="Transparent"
+        FlowDirection="RightToLeft">
+
+    <Window.Resources>
+        <!-- Modern TextBox Style -->
+        <Style x:Key="ModernTextBox" TargetType="TextBox">
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontFamily" Value="Segoe UI, Tahoma, Arial"/>
+            <Setter Property="Padding" Value="15,12"/>
+            <Setter Property="Background" Value="#F9FAFB"/>
+            <Setter Property="Foreground" Value="#1F2937"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BorderBrush" Value="#E5E7EB"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="10">
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                          VerticalAlignment="Center"
+                                          Margin="5,0"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter Property="BorderBrush" Value="#667EEA"/>
+                                <Setter Property="Background" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="BorderBrush" Value="#667EEA"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern PasswordBox Style -->
+        <Style x:Key="ModernPasswordBox" TargetType="PasswordBox">
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontFamily" Value="Segoe UI, Tahoma, Arial"/>
+            <Setter Property="Padding" Value="15,12"/>
+            <Setter Property="Background" Value="#F9FAFB"/>
+            <Setter Property="Foreground" Value="#1F2937"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BorderBrush" Value="#E5E7EB"/>
+            <Setter Property="PasswordChar" Value="●"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="PasswordBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="10">
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                          VerticalAlignment="Center"
+                                          Margin="5,0"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter Property="BorderBrush" Value="#667EEA"/>
+                                <Setter Property="Background" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="BorderBrush" Value="#667EEA"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Login Button Style -->
+        <Style x:Key="LoginButton" TargetType="Button">
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontFamily" Value="Segoe UI, Tahoma, Arial"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="10">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#667EEA" Offset="0"/>
+                                    <GradientStop Color="#764BA2" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Border.Effect>
+                                <DropShadowEffect Color="#667EEA" Opacity="0.4" ShadowDepth="0" BlurRadius="15"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                            <GradientStop Color="#5568D3" Offset="0"/>
+                                            <GradientStop Color="#6A3E8F" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.98" ScaleY="0.98"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Exit Button Style -->
+        <Style x:Key="ExitButton" TargetType="Button">
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontFamily" Value="Segoe UI, Tahoma, Arial"/>
+            <Setter Property="Foreground" Value="#EF4444"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#EF4444"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="10">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#EF4444"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#DC2626"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Restore Button Style -->
+        <Style x:Key="RestoreButton" TargetType="Button">
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontFamily" Value="Segoe UI, Tahoma, Arial"/>
+            <Setter Property="Foreground" Value="#3B82F6"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#3B82F6"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="10">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#3B82F6"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#2563EB"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Close Button Style -->
+        <Style x:Key="CloseBtn" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#EF4444"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Border CornerRadius="20" Background="White" Margin="10">
+        <Border.Effect>
+            <DropShadowEffect Color="#1F2937" Opacity="0.3" ShadowDepth="5" BlurRadius="30"/>
+        </Border.Effect>
+
+        <Grid Margin="0,0,0,-29">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="180"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Gradient Header -->
+            <Border Grid.Row="0" CornerRadius="20,20,0,0" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#667EEA" Offset="0"/>
+                        <GradientStop Color="#764BA2" Offset="0.5"/>
+                        <GradientStop Color="#F093FB" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+
+                <Grid>
+                    <!-- Close Button -->
+                    <Button Style="{StaticResource CloseBtn}" 
+                            Content="✕" 
+                            Click="ExitButton_Click"
+                            HorizontalAlignment="Left" 
+                            VerticalAlignment="Top"
+                            Margin="15,15,0,0"
+                            FlowDirection="LeftToRight"/>
+
+                    <!-- Icon and Title -->
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Border Background="White" 
+                                Width="85" 
+                                Height="85" 
+                                CornerRadius="42.5"
+                                Margin="0,0,0,12">
+                            <Border.Effect>
+                                <DropShadowEffect Color="#000000" Opacity="0.2" ShadowDepth="3" BlurRadius="12"/>
+                            </Border.Effect>
+                            <TextBlock Text="🔐" 
+                                       FontSize="48" 
+                                       HorizontalAlignment="Center" 
+                                       VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="تسجيل الدخول" 
+                                   FontSize="24" 
+                                   FontWeight="Bold" 
+                                   Foreground="White"
+                                   HorizontalAlignment="Center"
+                                   TextAlignment="Center"/>
+                        <TextBlock Text="برنامج البصمة"
+                                   FontSize="14"
+                                   Foreground="White"
+                                   Opacity="0.9"
+                                   Margin="0,4,0,0"
+                                   HorizontalAlignment="Center"
+                                   TextAlignment="Center"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Login Form -->
+            <StackPanel Grid.Row="1" Margin="45,19,45,30" VerticalAlignment="Top">
+                <!-- Welcome Message -->
+                <TextBlock Text="مرحباً بك" 
+                           FontSize="20" 
+                           FontWeight="Bold" 
+                           Foreground="#1F2937"
+                           TextAlignment="Right"
+                           Margin="0,0,0,6"/>
+                <TextBlock Text="الرجاء إدخال بيانات الدخول للمتابعة" 
+                           FontSize="13" 
+                           Foreground="#6B7280"
+                           TextAlignment="Right"
+                           Margin="0,0,0,22"/>
+
+                <!-- Username Section -->
+                <TextBlock Text="اسم المستخدم" 
+                           FontWeight="SemiBold" 
+                           FontSize="13"
+                           Foreground="#374151"
+                           Margin="0,0,0,8"
+                           TextAlignment="Right"/>
+                <TextBox x:Name="UsernameTextBox" 
+                         Style="{StaticResource ModernTextBox}"
+                         TabIndex="1"/>
+
+                <!-- Password Section -->
+                <TextBlock Text="كلمة المرور" 
+                           FontWeight="SemiBold" 
+                           FontSize="13"
+                           Foreground="#374151"
+                           Margin="0,20,0,8"
+                           TextAlignment="Right"/>
+                <PasswordBox x:Name="PasswordBox" 
+                             Style="{StaticResource ModernPasswordBox}"
+                             TabIndex="2"/>
+
+                <!-- Login Button -->
+                <Button Content="تسجيل الدخول" 
+                        Click="LoginButton_Click" 
+                        Style="{StaticResource LoginButton}"
+                        Margin="0,28,0,0"
+                        IsDefault="True"
+                        TabIndex="3"/>
+
+                <!-- Exit Button -->
+                <Button Content="خروج من البرنامج"
+                        Click="ExitButton_Click"
+                        Style="{StaticResource ExitButton}"
+                        Margin="0,10,0,0"
+                        TabIndex="4"/>
+
+                <!-- Restore Database Button -->
+                <Button Content="استعادة قاعدة البيانات"
+                        Click="RestoreButton_Click"
+                        Style="{StaticResource RestoreButton}"
+                        Margin="0,10,0,0"
+                        TabIndex="5"/>
+
+                <!-- Info Footer -->
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

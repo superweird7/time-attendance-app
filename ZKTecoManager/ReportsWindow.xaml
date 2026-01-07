@@ -1,0 +1,607 @@
+﻿<Window x:Class="ZKTecoManager.ReportsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:ZKTecoManager.Controls"
+        mc:Ignorable="d"
+        Title="تقارير الحضور - Attendance Reports" Height="900" Width="2400"
+        WindowStartupLocation="CenterOwner"
+        Background="Transparent"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        ResizeMode="CanResize"
+        MinWidth="1400"
+        MinHeight="700"
+        WindowState="Maximized"
+        FlowDirection="RightToLeft">
+
+    <Window.Resources>
+        <!-- Primary Button (Blue) -->
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontFamily" Value="Segoe UI, Tahoma, Arial"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="10">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#667EEA" Offset="0"/>
+                                    <GradientStop Color="#764BA2" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Border.Effect>
+                                <DropShadowEffect Color="#667EEA" Opacity="0.3" ShadowDepth="0" BlurRadius="10"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                            <GradientStop Color="#5568D3" Offset="0"/>
+                                            <GradientStop Color="#6A3E8F" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Success Button (Green) -->
+        <Style x:Key="SecondaryButtonStyle" TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="10">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#10B981" Offset="0"/>
+                                    <GradientStop Color="#059669" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Border.Effect>
+                                <DropShadowEffect Color="#10B981" Opacity="0.3" ShadowDepth="0" BlurRadius="10"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                            <GradientStop Color="#0EA06E" Offset="0"/>
+                                            <GradientStop Color="#047857" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Warning Button (Orange) -->
+        <Style x:Key="WarningButtonStyle" TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="10">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#F59E0B" Offset="0"/>
+                                    <GradientStop Color="#D97706" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Border.Effect>
+                                <DropShadowEffect Color="#F59E0B" Opacity="0.3" ShadowDepth="0" BlurRadius="10"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                            <GradientStop Color="#DC8B05" Offset="0"/>
+                                            <GradientStop Color="#B45309" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Save Changes Button (Amber) -->
+        <Style x:Key="SaveChangesButtonStyle" TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="10">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#F59E0B" Offset="0"/>
+                                    <GradientStop Color="#EF4444" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Border.Effect>
+                                <DropShadowEffect Color="#F59E0B" Opacity="0.3" ShadowDepth="0" BlurRadius="10"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                            <GradientStop Color="#DC8B05" Offset="0"/>
+                                            <GradientStop Color="#DC2626" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Print Button (Red) -->
+        <Style x:Key="PrintButtonStyle" TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="10">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#EF4444" Offset="0"/>
+                                    <GradientStop Color="#DC2626" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Border.Effect>
+                                <DropShadowEffect Color="#EF4444" Opacity="0.3" ShadowDepth="0" BlurRadius="10"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                            <GradientStop Color="#DC2626" Offset="0"/>
+                                            <GradientStop Color="#B91C1C" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Window Control Buttons -->
+        <Style x:Key="WinBtn" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#40FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern DataGrid Style -->
+        <Style x:Key="ModernDataGridStyle" TargetType="DataGrid">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="RowHeight" Value="45"/>
+            <Setter Property="CanUserResizeRows" Value="False"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontFamily" Value="Segoe UI, Tahoma, Arial"/>
+            <Setter Property="AlternatingRowBackground" Value="#F8F9FA"/>
+            <Setter Property="HorizontalGridLinesBrush" Value="#E5E7EB"/>
+        </Style>
+
+        <!-- Modern Column Header Style -->
+        <Style x:Key="ModernColumnHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#F3F4F6"/>
+            <Setter Property="Foreground" Value="#1F2937"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="12,12"/>
+            <Setter Property="BorderThickness" Value="0,0,0,2"/>
+            <Setter Property="BorderBrush" Value="#E5E7EB"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+
+        <!-- Modern Cell Style -->
+        <Style x:Key="ModernCellStyle" TargetType="DataGridCell">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridCell">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#E3F2FD"/>
+                    <Setter Property="Foreground" Value="#1F2937"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Modern Row Style -->
+        <!-- Modern Row Style -->
+        <Style x:Key="ModernRowStyle" TargetType="DataGridRow">
+            <Style.Triggers>
+                <!-- ✅ DARK RED: Absence (غياب) -->
+                <DataTrigger Binding="{Binding HighlightColor}" Value="#FFD6D6">
+                    <Setter Property="Background" Value="#FFD6D6"/>
+                    <Setter Property="Foreground" Value="#7F1D1D"/>
+                </DataTrigger>
+
+                <!-- ✅ LIGHT RED/PINK: Missing Punch (عدم وجود بصمة) -->
+                <DataTrigger Binding="{Binding HighlightColor}" Value="#FFE6E6">
+                    <Setter Property="Background" Value="#FFE6E6"/>
+                    <Setter Property="Foreground" Value="#991B1B"/>
+                </DataTrigger>
+
+                <!-- ✅ YELLOW: Late/Early (تأخير/قبل وقت) -->
+                <DataTrigger Binding="{Binding HighlightColor}" Value="#FFF9E5">
+                    <Setter Property="Background" Value="#FFF9E5"/>
+                    <Setter Property="Foreground" Value="#78350F"/>
+                </DataTrigger>
+
+                <!-- ✅ BLUE: Leave (اجازة) -->
+                <DataTrigger Binding="{Binding HighlightColor}" Value="#EBF5FB">
+                    <Setter Property="Background" Value="#EBF5FB"/>
+                    <Setter Property="Foreground" Value="#1E3A8A"/>
+                </DataTrigger>
+
+                <!-- ✅ GREEN: Official Duty (واجب/تكليف) -->
+                <DataTrigger Binding="{Binding HighlightColor}" Value="#E8F8F5">
+                    <Setter Property="Background" Value="#E8F8F5"/>
+                    <Setter Property="Foreground" Value="#065F46"/>
+                </DataTrigger>
+
+                <!-- ✅ LIGHT GRAY: Other Exceptions -->
+                <DataTrigger Binding="{Binding HighlightColor}" Value="#F0F0F0">
+                    <Setter Property="Background" Value="#F0F0F0"/>
+                    <Setter Property="Foreground" Value="#374151"/>
+                </DataTrigger>
+
+                <!-- Mouse Over and Selection -->
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="BorderBrush" Value="#667EEA"/>
+                    <Setter Property="BorderThickness" Value="2,0,2,0"/>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#E3F2FD"/>
+                    <Setter Property="Foreground" Value="#1F2937"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Modern ComboBox Style -->
+        <Style x:Key="ModernComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E5E7EB"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="FontFamily" Value="Segoe UI, Tahoma, Arial"/>
+        </Style>
+
+        <!-- Modern DatePicker Style -->
+        <Style x:Key="ModernDatePickerStyle" TargetType="DatePicker">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E5E7EB"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="FontFamily" Value="Segoe UI, Tahoma, Arial"/>
+        </Style>
+
+        <!-- Modern CheckBox Style -->
+        <Style TargetType="CheckBox">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontFamily" Value="Segoe UI, Tahoma, Arial"/>
+            <Setter Property="Foreground" Value="#374151"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="70"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Gradient Header -->
+        <Border Grid.Row="0" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                    <GradientStop Color="#667EEA" Offset="0"/>
+                    <GradientStop Color="#764BA2" Offset="0.5"/>
+                    <GradientStop Color="#F093FB" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+
+            <Grid>
+                <!-- Title -->
+                <StackPanel Orientation="Horizontal" 
+                            VerticalAlignment="Center" 
+                            HorizontalAlignment="Right" 
+                            Margin="25,0"
+                            FlowDirection="LeftToRight">
+                    <TextBlock Text="📊" FontSize="24" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                    <TextBlock Text="تقارير الحضور والانصراف" 
+                               FontSize="20" 
+                               FontWeight="Bold" 
+                               Foreground="White" 
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Window Controls -->
+                <StackPanel Orientation="Horizontal" 
+                            HorizontalAlignment="Left" 
+                            VerticalAlignment="Center" 
+                            Margin="15,0"
+                            FlowDirection="LeftToRight">
+                    <Button Content="─" Style="{StaticResource WinBtn}" Click="MinimizeButton_Click" Margin="5,0"/>
+                    <Button Content="✕" Style="{StaticResource WinBtn}" Click="CloseButton_Click" Margin="5,0"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Main Content -->
+        <Grid Grid.Row="1">
+            <Grid.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#F9FAFB" Offset="0"/>
+                    <GradientStop Color="#F3F4F6" Offset="1"/>
+                </LinearGradientBrush>
+            </Grid.Background>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="340"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Filters Sidebar -->
+            <Border Grid.Column="0" 
+                    Background="White" 
+                    Padding="25" 
+                    Margin="15,15,10,15">
+                <Border.Effect>
+                    <DropShadowEffect Color="#667EEA" Opacity="0.08" ShadowDepth="2" BlurRadius="12"/>
+                </Border.Effect>
+
+                <StackPanel>
+                    <!-- Filters Title -->
+                    <Border Background="#F3F4F6" 
+                            CornerRadius="10" 
+                            Padding="15,12" 
+                            Margin="0,0,0,25">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <TextBlock Text="🔍" FontSize="18" Margin="0,0,10,0"/>
+                            <TextBlock Text="الفلاتر والخيارات" 
+                                       FontSize="18" 
+                                       FontWeight="Bold" 
+                                       Foreground="#1F2937"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Department Filter -->
+                    <TextBlock Text="القسم" 
+                               FontWeight="SemiBold" 
+                               FontSize="14" 
+                               Foreground="#374151" 
+                               Margin="0,0,0,10"
+                               TextAlignment="Right"/>
+                    <ComboBox x:Name="DepartmentFilterComboBox" 
+                              Style="{StaticResource ModernComboBoxStyle}" 
+                              DisplayMemberPath="DeptName" 
+                              SelectionChanged="DepartmentFilter_SelectionChanged" 
+                              Margin="0,0,0,20"/>
+
+                    <!-- Employee Filter -->
+                    <TextBlock Text="الموظف" 
+                               FontWeight="SemiBold" 
+                               FontSize="14" 
+                               Foreground="#374151" 
+                               Margin="0,0,0,10"
+                               TextAlignment="Right"/>
+                    <ComboBox x:Name="EmployeeFilterComboBox" 
+                              Style="{StaticResource ModernComboBoxStyle}" 
+                              DisplayMemberPath="Name" 
+                              Margin="0,0,0,20"/>
+
+                    <!-- From Date -->
+                    <TextBlock Text="من تاريخ" 
+                               FontWeight="SemiBold" 
+                               FontSize="14" 
+                               Foreground="#374151" 
+                               Margin="0,0,0,10"
+                               TextAlignment="Right"/>
+                    <DatePicker x:Name="StartDatePicker" 
+                                Style="{StaticResource ModernDatePickerStyle}" 
+                                Margin="0,0,0,20"/>
+
+                    <!-- To Date -->
+                    <TextBlock Text="إلى تاريخ" 
+                               FontWeight="SemiBold" 
+                               FontSize="14" 
+                               Foreground="#374151" 
+                               Margin="0,0,0,10"
+                               TextAlignment="Right"/>
+                    <DatePicker x:Name="EndDatePicker" 
+                                Style="{StaticResource ModernDatePickerStyle}" 
+                                Margin="0,0,0,20"/>
+
+                    <!-- Auto Calculate Checkbox -->
+                    <Border Background="#F9FAFB" 
+                            CornerRadius="8" 
+                            Padding="12" 
+                            Margin="0,0,0,25">
+                        <CheckBox x:Name="AutoCalculateExceptionsCheckBox" 
+                                  Content="حساب الاستثناءات تلقائياً" 
+                                  IsChecked="True" 
+                                  FontWeight="SemiBold" 
+                                  Foreground="#374151"/>
+                    </Border>
+
+                    <!-- Action Buttons -->
+                    <Button Content="إنشاء التقرير" 
+                            Style="{StaticResource PrimaryButtonStyle}" 
+                            Click="GenerateReport_Click" 
+                            Margin="0,0,0,12"/>
+
+                    <!-- Manual Edit Button (Visible only for authorized users) -->
+                    <Button x:Name="ManualEditButton"
+                            Content="✏️ تعديل الأوقات يدوياً" 
+                            Style="{StaticResource WarningButtonStyle}" 
+                            Click="ManualEdit_Click" 
+                            Visibility="Collapsed"
+                            Margin="0,0,0,12"/>
+
+                    <Button Content="تعيين استثناء" 
+                            Style="{StaticResource WarningButtonStyle}" 
+                            Click="AssignException_Click" 
+                            Margin="0,0,0,12"/>
+
+                    <Button Content="حفظ التغييرات" 
+                            Style="{StaticResource SaveChangesButtonStyle}" 
+                            Click="SaveChanges_Click" 
+                            Margin="0,0,0,12"/>
+
+                    <Button Content="تصدير إلى PDF" 
+                            Style="{StaticResource SecondaryButtonStyle}" 
+                            Click="ExportToPdf_Click" 
+                            Margin="0,0,0,12"/>
+
+                    <Button Content="طباعة التقرير"
+                            Style="{StaticResource PrintButtonStyle}"
+                            Click="PrintReport_Click"
+                            Margin="0,0,0,0"/>
+
+                </StackPanel>
+            </Border>
+
+            <!-- DataGrid Area -->
+            <Border Grid.Column="1" 
+                    Background="White" 
+                    Margin="10,15,15,15">
+                <Border.Effect>
+                    <DropShadowEffect Color="#667EEA" Opacity="0.08" ShadowDepth="2" BlurRadius="12"/>
+                </Border.Effect>
+
+                <Grid>
+                    <!-- DataGrid Header -->
+                    <Border Background="#F3F4F6" 
+                            Height="60"
+                            VerticalAlignment="Top"
+                            Padding="20,0">
+                        <StackPanel Orientation="Horizontal" 
+                                    HorizontalAlignment="Right" 
+                                    VerticalAlignment="Center">
+                            <TextBlock Text="📋" FontSize="20" Margin="0,0,10,0"/>
+                            <TextBlock Text="سجل الحضور والانصراف" 
+                                       FontSize="16" 
+                                       FontWeight="SemiBold" 
+                                       Foreground="#1F2937"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- ✅ UPDATED: Read-Only DataGrid -->
+                    <DataGrid x:Name="ReportDataGrid" 
+                              Style="{StaticResource ModernDataGridStyle}"
+                              ColumnHeaderStyle="{StaticResource ModernColumnHeaderStyle}"
+                              CellStyle="{StaticResource ModernCellStyle}"
+                              RowStyle="{StaticResource ModernRowStyle}"
+                              AutoGenerateColumns="False" 
+                              CanUserAddRows="False"
+                              CanUserDeleteRows="False"
+                              SelectionMode="Extended"
+                              HorizontalScrollBarVisibility="Auto"
+                              VerticalScrollBarVisibility="Auto"
+                              Margin="0,60,0,0">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="رقم البصمة" Binding="{Binding BadgeNumber}" Width="120" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="اسم الموظف" Binding="{Binding EmployeeName}" Width="200" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="القسم" Binding="{Binding Department}" Width="150" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="التاريخ" Binding="{Binding Date, StringFormat='yyyy-MM-dd'}" Width="120" IsReadOnly="True"/>
+
+                            <!-- ✅ Read-only time columns -->
+                            <DataGridTextColumn Header="الحضور الفعلي" Binding="{Binding ActualClockInString}" Width="130" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="الانصراف الفعلي" Binding="{Binding ActualClockOutString}" Width="130" IsReadOnly="True"/>
+
+                            <DataGridTextColumn Header="جميع الأوقات" Binding="{Binding AllClocks}" Width="250" IsReadOnly="True"/>
+
+                            <!-- ✅ RESTORED: Editable exception dropdown -->
+                            <DataGridTemplateColumn Header="الاستثناءات" Width="*" MinWidth="220">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox ItemsSource="{Binding AvailableExceptions}" 
+                          DisplayMemberPath="ExceptionName"
+                          SelectedValuePath="ExceptionTypeId"
+                          SelectedValue="{Binding SelectedExceptionTypeId, UpdateSourceTrigger=PropertyChanged}"
+                          VerticalContentAlignment="Center"
+                          BorderThickness="0"
+                          Background="Transparent"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+
+                    </DataGrid>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Loading Overlay - Blocks all interactions while visible -->
+        <controls:LoadingOverlay x:Name="LoadingOverlay" Grid.RowSpan="2"/>
+    </Grid>
+</Window>

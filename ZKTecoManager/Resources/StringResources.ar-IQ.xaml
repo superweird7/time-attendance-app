@@ -1,0 +1,167 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!-- General -->
+    <system:String x:Key="AppTitle">مدير ZKTeco</system:String>
+    <system:String x:Key="Close">إغلاق</system:String>
+    <system:String x:Key="Cancel">إلغاء</system:String>
+    <system:String x:Key="Save">حفظ</system:String>
+    <system:String x:Key="SaveChanges">حفظ التغييرات</system:String>
+    <system:String x:Key="Add">إضافة</system:String>
+    <system:String x:Key="Edit">تعديل</system:String>
+    <system:String x:Key="Delete">حذف</system:String>
+    <system:String x:Key="Search">بحث...</system:String>
+    <system:String x:Key="Success">نجاح</system:String>
+    <system:String x:Key="Error">خطأ</system:String>
+    <system:String x:Key="ConfirmDeletion">تأكيد الحذف</system:String>
+
+    <!-- Login -->
+    <system:String x:Key="LoginRequired">تسجيل الدخول مطلوب</system:String>
+    <system:String x:Key="Username">اسم المستخدم</system:String>
+    <system:String x:Key="Password">كلمة المرور</system:String>
+    <system:String x:Key="Login">تسجيل الدخول</system:String>
+    <system:String x:Key="Exit">الخروج من البرنامج</system:String>
+
+    <!-- Main Menu -->
+    <system:String x:Key="Welcome">مرحباً بعودتك،</system:String>
+    <system:String x:Key="SelectOption">اختر أحد الخيارات للمتابعة</system:String>
+    <system:String x:Key="Employees">الموظفين</system:String>
+    <system:String x:Key="EmployeesSub">إدارة سجلات الموظفين</system:String>
+    <system:String x:Key="Departments">الأقسام</system:String>
+    <system:String x:Key="DepartmentsSub">تنظيم الهيكل التنظيمي للشركة</system:String>
+    <system:String x:Key="Shifts">ورديات الدوام</system:String>
+    <system:String x:Key="ShiftsSub">إدارة جداول العمل</system:String>
+    <system:String x:Key="Devices">الأجهزة</system:String>
+    <system:String x:Key="DevicesSub">تكوين أجهزة ZKTeco</system:String>
+    <system:String x:Key="Reports">التقارير</system:String>
+    <system:String x:Key="ReportsSub">عرض تقارير الحضور</system:String>
+    <system:String x:Key="ChangePassword">تغيير كلمة المرور</system:String>
+    <system:String x:Key="ChangePasswordSub">تحديث بيانات تسجيل الدخول</system:String>
+    <system:String x:Key="AdminPanel">لوحة التحكم</system:String>
+    <system:String x:Key="AdminPanelSub">إدارة المستخدمين والصلاحيات</system:String>
+    <system:String x:Key="About">حول البرنامج</system:String>
+
+    <!-- Employee Management Window -->
+    <system:String x:Key="EmployeeManagement">إدارة الموظفين</system:String>
+    <system:String x:Key="AddEmployee">إضافة موظف</system:String>
+    <system:String x:Key="EditEmployee">تعديل موظف</system:String>
+    <system:String x:Key="DeleteEmployee">حذف موظف</system:String>
+    <system:String x:Key="AssignShift">تعيين وردية</system:String>
+    <system:String x:Key="EmployeeName">اسم الموظف</system:String>
+    <system:String x:Key="BadgeNumber">رقم البصمة</system:String>
+    <system:String x:Key="EmployeeId">رقم الموظف</system:String>
+    <system:String x:Key="ID">الرقم</system:String>
+    <system:String x:Key="Shift">الوردية</system:String>
+    <system:String x:Key="NotAssigned">غير محدد</system:String>
+    <system:String x:Key="AllDepartments">جميع الأقسام</system:String>
+
+    <!-- Department Management Window -->
+    <system:String x:Key="DepartmentManagement">إدارة الأقسام</system:String>
+    <system:String x:Key="AddDepartment">إضافة قسم</system:String>
+    <system:String x:Key="EditDepartment">تعديل قسم</system:String>
+    <system:String x:Key="DeleteDepartment">حذف قسم</system:String>
+    <system:String x:Key="Department">القسم</system:String>
+    <system:String x:Key="DepartmentName">اسم القسم</system:String>
+
+    <!-- Device Management Window -->
+    <system:String x:Key="DeviceManagement">إدارة الأجهزة</system:String>
+    <system:String x:Key="DeviceAndAttendanceManagement">إدارة الأجهزة والحضور</system:String>
+    <system:String x:Key="AddDevice">إضافة جهاز</system:String>
+    <system:String x:Key="EditDevice">تعديل جهاز</system:String>
+    <system:String x:Key="DeleteDevice">حذف جهاز</system:String>
+    <system:String x:Key="RefreshStatuses">تحديث الحالات</system:String>
+    <system:String x:Key="TestConnection">اختبار الاتصال</system:String>
+    <system:String x:Key="SyncUsersAndFingerprints">مزامنة المستخدمين والبصمات</system:String>
+    <system:String x:Key="Users">المستخدمين</system:String>
+    <system:String x:Key="Fingerprints">البصمات</system:String>
+    <system:String x:Key="Checking">جاري الفحص...</system:String>
+    <system:String x:Key="Connected">متصل</system:String>
+    <system:String x:Key="Disconnected">غير متصل</system:String>
+    <system:String x:Key="Online">متصل</system:String>
+    <system:String x:Key="Offline">غير متصل</system:String>
+    <system:String x:Key="AttendanceLogs">سجلات الحضور</system:String>
+
+    <!-- Attendance Reports Window -->
+    <system:String x:Key="AttendanceReports">تقارير الحضور</system:String>
+    <system:String x:Key="Filters">الفلاتر</system:String>
+    <system:String x:Key="Employee">الموظف</system:String>
+    <system:String x:Key="AllEmployees">جميع الموظفين</system:String>
+    <system:String x:Key="FromDate">من تاريخ</system:String>
+    <system:String x:Key="ToDate">إلى تاريخ</system:String>
+    <system:String x:Key="Date">التاريخ</system:String>
+    <system:String x:Key="AutoCalcExceptions">حساب الاستثناءات تلقائياً</system:String>
+    <system:String x:Key="GenerateReport">إنشاء التقرير</system:String>
+    <system:String x:Key="AssignException">تعيين استثناء</system:String>
+    <system:String x:Key="ExportToPDF">تصدير إلى PDF</system:String>
+    <system:String x:Key="PrintReport">طباعة التقرير</system:String>
+    <system:String x:Key="RequiredIn">الحضور المطلوب</system:String>
+    <system:String x:Key="RequiredOut">الانصراف المطلوب</system:String>
+    <system:String x:Key="ActualIn">الحضور الفعلي</system:String>
+    <system:String x:Key="ActualOut">الانصراف الفعلي</system:String>
+    <system:String x:Key="AllClockTimes">كل أوقات البصمة</system:String>
+    <system:String x:Key="Exceptions">الاستثناءات</system:String>
+    <system:String x:Key="Notes">الملاحظات</system:String>
+    <system:String x:Key="AttendanceStatus">حضور الموظف</system:String>
+    <system:String x:Key="RequiredTime">الوقت المطلوب</system:String>
+    <system:String x:Key="ActualTime">الوقت الفعلي</system:String>
+
+    <!-- Shift Management Window -->
+    <system:String x:Key="ShiftManagement">إدارة الورديات</system:String>
+    <system:String x:Key="AddShift">إضافة وردية</system:String>
+    <system:String x:Key="EditShift">تعديل وردية</system:String>
+    <system:String x:Key="DeleteShift">حذف وردية</system:String>
+    <system:String x:Key="ShiftName">اسم الوردية</system:String>
+    <system:String x:Key="StartTime">وقت البدء</system:String>
+    <system:String x:Key="EndTime">وقت الانتهاء</system:String>
+
+    <!-- Admin Panel Window -->
+    <system:String x:Key="UserManagement">إدارة المستخدمين</system:String>
+    <system:String x:Key="AddUser">إضافة مستخدم</system:String>
+    <system:String x:Key="EditUser">تعديل مستخدم</system:String>
+    <system:String x:Key="DeleteUser">حذف مستخدم</system:String>
+    <system:String x:Key="Name">الاسم</system:String>
+    <system:String x:Key="Role">الدور</system:String>
+    <system:String x:Key="Permissions">الصلاحيات</system:String>
+
+    <!-- Common Buttons -->
+    <system:String x:Key="OK">موافق</system:String>
+    <system:String x:Key="Apply">تطبيق</system:String>
+    <system:String x:Key="Refresh">تحديث</system:String>
+    <system:String x:Key="Clear">مسح</system:String>
+    <system:String x:Key="Select">اختيار</system:String>
+    <system:String x:Key="Back">رجوع</system:String>
+    <system:String x:Key="Next">التالي</system:String>
+    <system:String x:Key="Previous">السابق</system:String>
+    <system:String x:Key="Finish">إنهاء</system:String>
+
+    <!-- Additional Dialog Strings -->
+    <system:String x:Key="AddNewEmployee">إضافة موظف جديد</system:String>
+    <system:String x:Key="EditEmployeeInfo">تعديل معلومات الموظف</system:String>
+    <system:String x:Key="AddNewDevice">إضافة جهاز جديد</system:String>
+    <system:String x:Key="DeviceAlias">اسم الجهاز</system:String>
+    <system:String x:Key="IPAddress">عنوان IP</system:String>
+    <system:String x:Key="DeviceConnectionInfo">معلومات اتصال الجهاز</system:String>
+    <system:String x:Key="ChangeYourPassword">تغيير كلمة المرور الخاصة بك</system:String>
+    <system:String x:Key="CurrentPassword">كلمة المرور الحالية</system:String>
+    <system:String x:Key="NewPassword">كلمة المرور الجديدة</system:String>
+    <system:String x:Key="ConfirmNewPassword">تأكيد كلمة المرور الجديدة</system:String>
+    <system:String x:Key="AssignExceptionToEmployees">تعيين استثناء للموظفين</system:String>
+    <system:String x:Key="SelectExceptionType">1. اختر نوع الاستثناء</system:String>
+    <system:String x:Key="SelectStartDate">2. اختر تاريخ البداية</system:String>
+    <system:String x:Key="SelectEndDate">3. اختر تاريخ النهاية</system:String>
+    <system:String x:Key="AddNotes">4. أضف ملاحظات (اختياري)</system:String>
+    <system:String x:Key="SelectEmployeesToUpdate">5. اختر الموظفين للتحديث</system:String>
+    <system:String x:Key="AssignShiftToEmployees">تعيين وردية للموظفين</system:String>
+    <system:String x:Key="SelectShiftToAssign">1. اختر الوردية للتعيين</system:String>
+    <system:String x:Key="Assign">تعيين</system:String>
+    <system:String x:Key="SaveChangesButton">💾 حفظ التغييرات</system:String>
+    <system:String x:Key="AllUsers">جميع المستخدمين</system:String>
+    <system:String x:Key="PermittedDepartments">الأقسام المسموح بها</system:String>
+    <system:String x:Key="PermittedDevices">الأجهزة المسموح بها</system:String>
+    <system:String x:Key="UserRole">دور المستخدم</system:String>
+    <system:String x:Key="SelectedUser">المستخدم المحدد</system:String>
+    <system:String x:Key="AssignDepartment">تعيين قسم</system:String>
+    <system:String x:Key="EmployeeBadge">بطاقة الموظف</system:String>
+
+</ResourceDictionary>

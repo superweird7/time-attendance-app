@@ -1,0 +1,413 @@
+<Window x:Class="ZKTecoManager.DashboardWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:ZKTecoManager.Controls"
+        mc:Ignorable="d"
+        Title="لوحة المعلومات - ZKTeco Manager" Height="800" Width="1300"
+        WindowStartupLocation="CenterScreen"
+        Background="White"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        FlowDirection="RightToLeft"
+        Loaded="Window_Loaded">
+
+    <Window.Resources>
+        <!-- KPI Card Style -->
+        <Style x:Key="KpiCard" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="#4A5568" Opacity="0.1" ShadowDepth="3" BlurRadius="10"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Window Button -->
+        <Style x:Key="WinBtn" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#6B7280"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#FEE2E2"/>
+                                <Setter Property="Foreground" Value="#DC2626"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Refresh Button Style -->
+        <Style x:Key="RefreshBtn" TargetType="Button">
+            <Setter Property="Background" Value="#667EEA"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="16,10"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="10" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#5A67D8"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#A0AEC0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- DataGrid Style -->
+        <Style TargetType="DataGrid">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+            <Setter Property="HorizontalGridLinesBrush" Value="#E5E7EB"/>
+            <Setter Property="RowBackground" Value="White"/>
+            <Setter Property="AlternatingRowBackground" Value="#F9FAFB"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#F3F4F6"/>
+            <Setter Property="Foreground" Value="#374151"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="BorderThickness" Value="0,0,0,2"/>
+            <Setter Property="BorderBrush" Value="#E5E7EB"/>
+        </Style>
+
+        <Style TargetType="DataGridCell">
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridCell">
+                        <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="70"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                    <GradientStop Color="#667EEA" Offset="0"/>
+                    <GradientStop Color="#764BA2" Offset="0.5"/>
+                    <GradientStop Color="#F093FB" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+            <Grid Margin="25,0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+                    <Border Background="White" CornerRadius="10" Padding="10,6" Margin="0,0,15,0">
+                        <TextBlock FontSize="20" FontWeight="Bold">
+                            <Run Text="📊" FontSize="18"/>
+                            <Run Text=" لوحة المعلومات" Foreground="#667EEA"/>
+                        </TextBlock>
+                    </Border>
+                    <TextBlock Text="تحليلات الحضور المباشرة" FontSize="14" Foreground="White" VerticalAlignment="Center" Opacity="0.9"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" FlowDirection="LeftToRight">
+                    <Button Style="{StaticResource WinBtn}" Content="─" Click="MinimizeButton_Click" Foreground="White"/>
+                    <Button Style="{StaticResource WinBtn}" Content="✕" Click="CloseButton_Click" Foreground="White"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Main Content -->
+        <Grid Grid.Row="1">
+            <Grid.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#F9FAFB" Offset="0"/>
+                    <GradientStop Color="#F3F4F6" Offset="0.5"/>
+                    <GradientStop Color="#E5E7EB" Offset="1"/>
+                </LinearGradientBrush>
+            </Grid.Background>
+
+            <Grid Margin="20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Date Filter & Refresh -->
+                <Border Grid.Row="0" Background="White" CornerRadius="12" Padding="20,15" Margin="0,0,0,15">
+                    <Border.Effect>
+                        <DropShadowEffect Color="#4A5568" Opacity="0.08" ShadowDepth="2" BlurRadius="8"/>
+                    </Border.Effect>
+                    <Grid>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+                            <TextBlock Text="التاريخ:" FontWeight="SemiBold" Foreground="#374151" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <DatePicker x:Name="DatePicker" Width="150" SelectedDateChanged="DatePicker_SelectedDateChanged" FlowDirection="LeftToRight"/>
+                            <TextBlock Text="القسم:" FontWeight="SemiBold" Foreground="#374151" VerticalAlignment="Center" Margin="30,0,10,0"/>
+                            <ComboBox x:Name="DepartmentCombo" Width="200" SelectionChanged="DepartmentCombo_SelectionChanged" DisplayMemberPath="DeptName"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                            <Button x:Name="RefreshButton" Style="{StaticResource RefreshBtn}" Click="RefreshButton_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="🔄" Margin="0,0,8,0"/>
+                                    <TextBlock Text="تحديث"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- KPI Cards Row -->
+                <Grid Grid.Row="1" Margin="0,0,0,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Total Employees -->
+                    <Border Grid.Column="0" Style="{StaticResource KpiCard}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" Width="50" Height="50" CornerRadius="12" HorizontalAlignment="Right" Margin="0,0,0,10">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#3B82F6" Offset="0"/>
+                                        <GradientStop Color="#1D4ED8" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <TextBlock Text="👥" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <TextBlock Grid.Row="1" x:Name="TotalEmployeesText" Text="0" FontSize="32" FontWeight="Bold" Foreground="#1F2937" HorizontalAlignment="Right"/>
+                            <TextBlock Grid.Row="2" Text="إجمالي الموظفين" FontSize="13" Foreground="#6B7280" Margin="0,5,0,0" HorizontalAlignment="Right"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Present Today -->
+                    <Border Grid.Column="1" Style="{StaticResource KpiCard}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" Width="50" Height="50" CornerRadius="12" HorizontalAlignment="Right" Margin="0,0,0,10">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#10B981" Offset="0"/>
+                                        <GradientStop Color="#059669" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <TextBlock Text="✓" FontSize="24" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
+                            </Border>
+                            <TextBlock Grid.Row="1" x:Name="PresentTodayText" Text="0" FontSize="32" FontWeight="Bold" Foreground="#10B981" HorizontalAlignment="Right"/>
+                            <TextBlock Grid.Row="2" Text="الحاضرون اليوم" FontSize="13" Foreground="#6B7280" Margin="0,5,0,0" HorizontalAlignment="Right"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Absent Today -->
+                    <Border Grid.Column="2" Style="{StaticResource KpiCard}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" Width="50" Height="50" CornerRadius="12" HorizontalAlignment="Right" Margin="0,0,0,10">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#EF4444" Offset="0"/>
+                                        <GradientStop Color="#DC2626" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <TextBlock Text="✗" FontSize="24" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
+                            </Border>
+                            <TextBlock Grid.Row="1" x:Name="AbsentTodayText" Text="0" FontSize="32" FontWeight="Bold" Foreground="#EF4444" HorizontalAlignment="Right"/>
+                            <TextBlock Grid.Row="2" Text="الغائبون اليوم" FontSize="13" Foreground="#6B7280" Margin="0,5,0,0" HorizontalAlignment="Right"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Late Arrivals -->
+                    <Border Grid.Column="3" Style="{StaticResource KpiCard}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" Width="50" Height="50" CornerRadius="12" HorizontalAlignment="Right" Margin="0,0,0,10">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#F59E0B" Offset="0"/>
+                                        <GradientStop Color="#D97706" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <TextBlock Text="⏰" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <TextBlock Grid.Row="1" x:Name="LateArrivalsText" Text="0" FontSize="32" FontWeight="Bold" Foreground="#F59E0B" HorizontalAlignment="Right"/>
+                            <TextBlock Grid.Row="2" Text="المتأخرون" FontSize="13" Foreground="#6B7280" Margin="0,5,0,0" HorizontalAlignment="Right"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Attendance Rate -->
+                    <Border Grid.Column="4" Style="{StaticResource KpiCard}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" Width="50" Height="50" CornerRadius="12" HorizontalAlignment="Right" Margin="0,0,0,10">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#8B5CF6" Offset="0"/>
+                                        <GradientStop Color="#7C3AED" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <TextBlock Text="📈" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <TextBlock Grid.Row="1" x:Name="AttendanceRateText" Text="0%" FontSize="32" FontWeight="Bold" Foreground="#8B5CF6" HorizontalAlignment="Right"/>
+                            <TextBlock Grid.Row="2" Text="نسبة الحضور" FontSize="13" Foreground="#6B7280" Margin="0,5,0,0" HorizontalAlignment="Right"/>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- Data Grids -->
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Absentees List -->
+                    <Border Grid.Column="0" Background="White" CornerRadius="12" Padding="0" Margin="0,0,10,0">
+                        <Border.Effect>
+                            <DropShadowEffect Color="#4A5568" Opacity="0.08" ShadowDepth="2" BlurRadius="8"/>
+                        </Border.Effect>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" Background="#FEF2F2" CornerRadius="12,12,0,0" Padding="15,12">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <TextBlock Text="✗" Foreground="#EF4444" FontSize="16" FontWeight="Bold" Margin="0,0,10,0"/>
+                                    <TextBlock Text="الموظفون الغائبون" FontSize="15" FontWeight="SemiBold" Foreground="#991B1B"/>
+                                    <TextBlock x:Name="AbsenteesCountText" Text=" (0)" FontSize="15" Foreground="#991B1B"/>
+                                </StackPanel>
+                            </Border>
+                            <DataGrid Grid.Row="1" x:Name="AbsenteesGrid" AutoGenerateColumns="False" IsReadOnly="True"
+                                      HeadersVisibility="Column" CanUserAddRows="False" CanUserDeleteRows="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="الرقم الوظيفي" Binding="{Binding BadgeNumber}" Width="100"/>
+                                    <DataGridTextColumn Header="الاسم" Binding="{Binding EmployeeName}" Width="*"/>
+                                    <DataGridTextColumn Header="القسم" Binding="{Binding DepartmentName}" Width="120"/>
+                                    <DataGridTextColumn Header="الوردية" Binding="{Binding ShiftName}" Width="100"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </Border>
+
+                    <!-- Late Arrivals List -->
+                    <Border Grid.Column="1" Background="White" CornerRadius="12" Padding="0" Margin="10,0,0,0">
+                        <Border.Effect>
+                            <DropShadowEffect Color="#4A5568" Opacity="0.08" ShadowDepth="2" BlurRadius="8"/>
+                        </Border.Effect>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" Background="#FEF3C7" CornerRadius="12,12,0,0" Padding="15,12">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <TextBlock Text="⏰" FontSize="16" Margin="0,0,10,0"/>
+                                    <TextBlock Text="المتأخرون" FontSize="15" FontWeight="SemiBold" Foreground="#92400E"/>
+                                    <TextBlock x:Name="LateCountText" Text=" (0)" FontSize="15" Foreground="#92400E"/>
+                                </StackPanel>
+                            </Border>
+                            <DataGrid Grid.Row="1" x:Name="LateArrivalsGrid" AutoGenerateColumns="False" IsReadOnly="True"
+                                      HeadersVisibility="Column" CanUserAddRows="False" CanUserDeleteRows="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="الرقم الوظيفي" Binding="{Binding BadgeNumber}" Width="100"/>
+                                    <DataGridTextColumn Header="الاسم" Binding="{Binding EmployeeName}" Width="*"/>
+                                    <DataGridTextColumn Header="القسم" Binding="{Binding DepartmentName}" Width="100"/>
+                                    <DataGridTextColumn Header="مدة التأخير" Binding="{Binding LateBy}" Width="90"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- Footer -->
+                <Border Grid.Row="3" Background="White" CornerRadius="12" Padding="15,12" Margin="0,15,0,0">
+                    <Border.Effect>
+                        <DropShadowEffect Color="#4A5568" Opacity="0.05" ShadowDepth="1" BlurRadius="5"/>
+                    </Border.Effect>
+                    <Grid>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+                            <Border Width="10" Height="10" CornerRadius="5" Margin="0,0,10,0">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="#10B981"/>
+                                    </Style>
+                                </Border.Style>
+                            </Border>
+                            <TextBlock x:Name="LastUpdateText" Text="آخر تحديث: --" FontSize="13" Foreground="#6B7280"/>
+                        </StackPanel>
+                        <TextBlock Text="تحديث تلقائي: كل 5 دقائق" FontSize="12" Foreground="#9CA3AF" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- Loading Overlay -->
+            <Border x:Name="LoadingOverlay" Background="#80000000" Visibility="Collapsed">
+                <Border Background="White" CornerRadius="12" Padding="30" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <StackPanel>
+                        <TextBlock Text="جاري التحميل..." FontSize="16" FontWeight="SemiBold" Foreground="#374151" HorizontalAlignment="Center"/>
+                        <ProgressBar IsIndeterminate="True" Width="200" Height="4" Margin="0,15,0,0"/>
+                    </StackPanel>
+                </Border>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

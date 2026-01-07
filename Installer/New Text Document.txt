@@ -1,0 +1,9 @@
+  1. Recompile the installer with Inno Setup (right-click ZKTecoManager_Setup.iss → Compile)
+  2. Copy updated files to user PC:
+    - ZKTecoManager\bin\Release\ZKTecoManager.exe (and all DLLs)
+    - Installer\setup_database.bat
+  3. On user PC, run the database setup manually:
+  cd "C:\Program Files\ZKTecoManager\Database"
+  setup_database.bat 2001
+  3. (Replace 2001 with your PostgreSQL password)
+  4. Then use the Restore button in the app - it should work now!
