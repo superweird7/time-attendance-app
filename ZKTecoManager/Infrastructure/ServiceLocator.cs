@@ -18,9 +18,11 @@ namespace ZKTecoManager.Infrastructure
         private static IAttendanceRepository _attendanceRepository;
         private static IExceptionRepository _exceptionRepository;
         private static IMachineRepository _machineRepository;
+        private static ILeaveRepository _leaveRepository;
 
         // Service instances (lazy initialization)
         private static IDashboardService _dashboardService;
+        private static ILeaveManagementService _leaveManagementService;
 
         #region Repositories
 
@@ -42,6 +44,9 @@ namespace ZKTecoManager.Infrastructure
         public static IMachineRepository MachineRepository =>
             _machineRepository ?? (_machineRepository = new MachineRepository());
 
+        public static ILeaveRepository LeaveRepository =>
+            _leaveRepository ?? (_leaveRepository = new LeaveRepository());
+
         #endregion
 
         #region Services
@@ -49,6 +54,10 @@ namespace ZKTecoManager.Infrastructure
         public static IDashboardService DashboardService =>
             _dashboardService ?? (_dashboardService = new DashboardService(
                 UserRepository, AttendanceRepository, ExceptionRepository, ShiftRepository));
+
+        public static ILeaveManagementService LeaveManagementService =>
+            _leaveManagementService ?? (_leaveManagementService = new LeaveManagementService(
+                LeaveRepository, UserRepository));
 
         #endregion
 
@@ -63,7 +72,9 @@ namespace ZKTecoManager.Infrastructure
             _attendanceRepository = null;
             _exceptionRepository = null;
             _machineRepository = null;
+            _leaveRepository = null;
             _dashboardService = null;
+            _leaveManagementService = null;
         }
     }
 }

@@ -41,6 +41,9 @@ namespace ZKTecoManager
             // Start auto-download service
             AutoDownloadService.Start();
 
+            // Start leave accrual service
+            DailyLeaveAccrualService.Start();
+
             // Preload cache
             CacheManager.Preload();
 
@@ -56,6 +59,9 @@ namespace ZKTecoManager
 
             // Stop auto-download service
             AutoDownloadService.Stop();
+
+            // Stop leave accrual service
+            DailyLeaveAccrualService.Stop();
 
             base.OnExit(e);
         }

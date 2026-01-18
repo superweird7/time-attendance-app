@@ -45,8 +45,16 @@ namespace ZKTecoManager
 
                 if (user != null)
                 {
-                    // ✅ Check if user has permission to login (only superadmin and deptadmin)
-                    if (user.Role.Trim().ToLower() != "superadmin" && user.Role.Trim().ToLower() != "deptadmin")
+                    // Check if user has permission to login (superadmin, deptadmin, or leaveadmin)
+                    var validRoles = new[] { "superadmin", "deptadmin", "leaveadmin" };
+                    var userRole = user.Role.Trim().ToLower();
+                    bool isValidRole = false;
+                    foreach (var role in validRoles)
+                    {
+                        if (userRole == role) { isValidRole = true; break; }
+                    }
+
+                    if (!isValidRole)
                     {
                         MessageBox.Show(
                             "ليس لديك صلاحية الدخول إلى النظام\nفقط المدراء يمكنهم تسجيل الدخول",
@@ -60,29 +68,47 @@ namespace ZKTecoManager
                         return;
                     }
 
-                    // ✅ تسجيل الدخول ناجح - Set user with permissions
+                    // تسجيل الدخول ناجح - Set user with permissions
                     CurrentUser.SetUser(user, user.CanEditTimes);
                     CurrentUser.SystemAccessType = user.SystemAccessType ?? "full_access";
 
-                    // إذا كان المستخدم مدير قسم، تحميل الصلاحيات
-                    if (user.Role.Trim().ToLower() == "deptadmin")
+                    // Load permissions based on role
+                    if (userRole == "deptadmin")
                     {
                         LoadDeptAdminPermissions(user.UserId);
                     }
-                    else if (user.Role.Trim().ToLower() == "superadmin")
+                    else if (userRole == "superadmin")
                     {
-                        // ✅ Superadmin always has edit permission
+                        // Superadmin always has edit permission
                         CurrentUser.CanEditTimes = true;
                     }
+                    else if (userRole == "leaveadmin")
+                    {
+                        // Leaveadmin: Load department permissions for filtering
+                        LoadDeptAdminPermissions(user.UserId);
+                    }
 
-                    // فتح النافذة الرئيسية
-                    MainWindow mainWindow = new MainWindow();
-                    mainWindow.Show();
+                    // Open appropriate window based on role
+                    if (userRole == "leaveadmin")
+                    {
+                        // Leaveadmin goes directly to Leave Management
+                        var leaveWindow = new LeaveManagementWindow();
+                        leaveWindow.Show();
+                    }
+                    else
+                    {
+                        // Superadmin and deptadmin go to MainWindow
+                        MainWindow mainWindow = new MainWindow();
+                        mainWindow.Show();
+                    }
                     this.Close();
                 }
                 else
                 {
-                    MessageBox.Show("اسم المستخدم أو كلمة المرور غير صحيحة", "خطأ في تسجيل الدخول",
+                    // Debug: Show what was entered
+                    System.Diagnostics.Debug.WriteLine($"[LOGIN] Login failed - Username: '{username}', Password length: {password.Length}");
+
+                    MessageBox.Show($"اسم المستخدم أو كلمة المرور غير صحيحة\n\nDebug: Tried username '{username}'", "خطأ في تسجيل الدخول",
                         MessageBoxButton.OK, MessageBoxImage.Error);
 
                     // مسح الحقول
@@ -131,9 +157,12 @@ namespace ZKTecoManager
         {
             try
             {
+                System.Diagnostics.Debug.WriteLine($"[LOGIN] Attempting login for username: '{username}'");
+
                 using (var conn = new NpgsqlConnection(DatabaseConfig.ConnectionString))
                 {
                     conn.Open();
+                    System.Diagnostics.Debug.WriteLine($"[LOGIN] Database connection opened successfully");
 
                     // Use TRIM in SQL to ignore extra spaces - search by badge_number
                     var sql = "SELECT user_id, name, password, role, can_edit_times, system_access_type FROM users WHERE TRIM(badge_number) = @username";
@@ -147,10 +176,15 @@ namespace ZKTecoManager
                             if (reader.Read())
                             {
                                 string storedPassword = reader.IsDBNull(2) ? string.Empty : reader.GetString(2);
+                                System.Diagnostics.Debug.WriteLine($"[LOGIN] User found. Stored password length: {storedPassword.Length}");
 
                                 // Secure password verification (supports both hashed and legacy plaintext)
-                                if (PasswordHelper.VerifyPassword(password, storedPassword))
+                                bool passwordMatch = PasswordHelper.VerifyPassword(password, storedPassword);
+                                System.Diagnostics.Debug.WriteLine($"[LOGIN] Password verification result: {passwordMatch}");
+
+                                if (passwordMatch)
                                 {
+                                    System.Diagnostics.Debug.WriteLine($"[LOGIN] Login successful for user: {reader.GetString(1)}");
                                     return new User
                                     {
                                         UserId = reader.GetInt32(0),
@@ -161,14 +195,23 @@ namespace ZKTecoManager
                                     };
                                 }
                             }
+                            else
+                            {
+                                System.Diagnostics.Debug.WriteLine($"[LOGIN] No user found with username: '{username}'");
+                            }
                         }
                     }
                 }
             }
             catch (NpgsqlException ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Database error during login: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"[LOGIN] Database error: {ex.Message}");
                 throw new Exception("حدث خطأ في الاتصال بقاعدة البيانات", ex);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[LOGIN] General error: {ex.Message}");
+                throw;
             }
             return null;
         }

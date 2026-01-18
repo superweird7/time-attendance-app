@@ -138,11 +138,9 @@ namespace ZKTecoManager.Infrastructure
                 CreatePermissionTemplatesTable(conn);
                 CreateAutoDownloadSettingsTable(conn);
                 CreateWebSessionsTable(conn);
-                // Leave Management System - Commented out for future implementation
-                //CreateLeaveTypesTable(conn);
-                //CreateLeaveBalancesTable(conn);
-                //CreateLeaveRequestsTable(conn);
-                //CreateLeaveApprovalHistoryTable(conn);
+                // Leave Management System - Migrate old schema first
+                MigrateLeaveManagementTables(conn);
+                CreateLeaveManagementTables(conn);
                 CreateAnnouncementsTable(conn);
                 CreateTelegramTables(conn);
 
@@ -610,125 +608,261 @@ namespace ZKTecoManager.Infrastructure
             ExecuteNonQuery(conn, "CREATE INDEX IF NOT EXISTS idx_web_sessions_expires ON web_sessions(expires_at)");
         }
 
-        private static void CreateLeaveTypesTable(NpgsqlConnection conn)
+        /// <summary>
+        /// Migrates old leave management tables to the new schema.
+        /// Drops tables with incompatible schemas so they can be recreated.
+        /// </summary>
+        private static void MigrateLeaveManagementTables(NpgsqlConnection conn)
         {
+            try
+            {
+                // Check if leave_balances has the old schema (has 'total_days' column instead of 'total_accrued')
+                bool hasOldSchema = false;
+                using (var cmd = new NpgsqlCommand(@"
+                    SELECT EXISTS (
+                        SELECT 1 FROM information_schema.columns
+                        WHERE table_name = 'leave_balances' AND column_name = 'total_days'
+                    )", conn))
+                {
+                    var result = cmd.ExecuteScalar();
+                    hasOldSchema = result != null && (bool)result;
+                }
+
+                if (hasOldSchema)
+                {
+                    System.Diagnostics.Debug.WriteLine("[Migration] Old leave_balances schema detected. Dropping old tables...");
+
+                    // Drop tables in correct order (respecting foreign keys)
+                    ExecuteNonQuery(conn, "DROP TABLE IF EXISTS leave_transactions CASCADE");
+                    ExecuteNonQuery(conn, "DROP TABLE IF EXISTS hourly_leave_accumulator CASCADE");
+                    ExecuteNonQuery(conn, "DROP TABLE IF EXISTS long_term_leave_registry CASCADE");
+                    ExecuteNonQuery(conn, "DROP TABLE IF EXISTS leave_balances CASCADE");
+                    ExecuteNonQuery(conn, "DROP TABLE IF EXISTS leave_accrual_settings CASCADE");
+                    // Keep leave_types if it has correct schema, drop leave_requests/approval (old workflow tables)
+                    ExecuteNonQuery(conn, "DROP TABLE IF EXISTS leave_requests CASCADE");
+                    ExecuteNonQuery(conn, "DROP TABLE IF EXISTS leave_approval_history CASCADE");
+
+                    System.Diagnostics.Debug.WriteLine("[Migration] Old leave tables dropped. They will be recreated with new schema.");
+                }
+
+                // Also check if leave_types is missing required columns
+                bool leaveTypesMissingColumns = false;
+                using (var cmd = new NpgsqlCommand(@"
+                    SELECT NOT EXISTS (
+                        SELECT 1 FROM information_schema.columns
+                        WHERE table_name = 'leave_types' AND column_name = 'accrual_type'
+                    )", conn))
+                {
+                    var result = cmd.ExecuteScalar();
+                    leaveTypesMissingColumns = result != null && (bool)result;
+                }
+
+                if (leaveTypesMissingColumns)
+                {
+                    System.Diagnostics.Debug.WriteLine("[Migration] Old leave_types schema detected. Dropping...");
+                    ExecuteNonQuery(conn, "DROP TABLE IF EXISTS leave_types CASCADE");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[Migration] Error during leave table migration: {ex.Message}");
+                // Continue anyway - the CREATE TABLE IF NOT EXISTS will handle it
+            }
+        }
+
+        /// <summary>
+        /// Creates all tables for the Leave Management System with accrual support
+        /// </summary>
+        private static void CreateLeaveManagementTables(NpgsqlConnection conn)
+        {
+            // 1. Leave Types - Extended configuration for accruals
             ExecuteNonQuery(conn, @"
                 CREATE TABLE IF NOT EXISTS leave_types (
                     leave_type_id SERIAL PRIMARY KEY,
-                    leave_type_name VARCHAR(100) NOT NULL UNIQUE,
-                    default_annual_days INTEGER DEFAULT 0,
-                    requires_approval BOOLEAN DEFAULT TRUE,
+                    leave_type_code VARCHAR(50) NOT NULL UNIQUE,
+                    leave_type_name_ar VARCHAR(100) NOT NULL,
+                    leave_type_name_en VARCHAR(100) NOT NULL,
+                    accrual_type VARCHAR(20) NOT NULL DEFAULT 'none',
+                    accrual_rate DECIMAL(5,3) DEFAULT 0,
+                    accrual_cap_monthly DECIMAL(5,2),
+                    is_cumulative BOOLEAN DEFAULT TRUE,
+                    annual_max DECIMAL(5,2),
+                    reset_on_year_start BOOLEAN DEFAULT FALSE,
+                    max_days_per_month INTEGER,
                     deducts_from_balance BOOLEAN DEFAULT TRUE,
                     is_active BOOLEAN DEFAULT TRUE,
+                    display_order INTEGER DEFAULT 0,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    CONSTRAINT valid_accrual_type CHECK (accrual_type IN ('none', 'daily', 'monthly'))
                 )");
 
-            // Add index
-            ExecuteNonQuery(conn, "CREATE INDEX IF NOT EXISTS idx_leave_types_active ON leave_types(is_active)");
-
-            // Insert default leave types
-            ExecuteNonQuery(conn, @"
-                INSERT INTO leave_types (leave_type_name, default_annual_days, requires_approval, deducts_from_balance)
-                SELECT 'إجازة سنوية - Annual Leave', 30, TRUE, TRUE WHERE NOT EXISTS (SELECT 1 FROM leave_types WHERE leave_type_name = 'إجازة سنوية - Annual Leave')");
-
-            ExecuteNonQuery(conn, @"
-                INSERT INTO leave_types (leave_type_name, default_annual_days, requires_approval, deducts_from_balance)
-                SELECT 'إجازة مرضية - Sick Leave', 15, TRUE, TRUE WHERE NOT EXISTS (SELECT 1 FROM leave_types WHERE leave_type_name = 'إجازة مرضية - Sick Leave')");
-
-            ExecuteNonQuery(conn, @"
-                INSERT INTO leave_types (leave_type_name, default_annual_days, requires_approval, deducts_from_balance)
-                SELECT 'إجازة طارئة - Emergency Leave', 5, TRUE, TRUE WHERE NOT EXISTS (SELECT 1 FROM leave_types WHERE leave_type_name = 'إجازة طارئة - Emergency Leave')");
-
-            ExecuteNonQuery(conn, @"
-                INSERT INTO leave_types (leave_type_name, default_annual_days, requires_approval, deducts_from_balance)
-                SELECT 'إجازة بدون راتب - Unpaid Leave', 0, TRUE, FALSE WHERE NOT EXISTS (SELECT 1 FROM leave_types WHERE leave_type_name = 'إجازة بدون راتب - Unpaid Leave')");
-
-            ExecuteNonQuery(conn, @"
-                INSERT INTO leave_types (leave_type_name, default_annual_days, requires_approval, deducts_from_balance)
-                SELECT 'إجازة زواج - Marriage Leave', 3, TRUE, TRUE WHERE NOT EXISTS (SELECT 1 FROM leave_types WHERE leave_type_name = 'إجازة زواج - Marriage Leave')");
-        }
-
-        private static void CreateLeaveBalancesTable(NpgsqlConnection conn)
-        {
+            // 2. Leave Balances - Per employee, per leave type, per year
             ExecuteNonQuery(conn, @"
                 CREATE TABLE IF NOT EXISTS leave_balances (
                     balance_id SERIAL PRIMARY KEY,
                     user_id_fk INTEGER NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
                     leave_type_id_fk INTEGER NOT NULL REFERENCES leave_types(leave_type_id) ON DELETE CASCADE,
                     year INTEGER NOT NULL,
-                    total_days DECIMAL(5,2) DEFAULT 0,
-                    used_days DECIMAL(5,2) DEFAULT 0,
-                    remaining_days DECIMAL(5,2) GENERATED ALWAYS AS (total_days - used_days) STORED,
+                    total_accrued DECIMAL(6,3) DEFAULT 0,
+                    used_days DECIMAL(6,3) DEFAULT 0,
+                    carried_over DECIMAL(6,3) DEFAULT 0,
+                    manual_adjustment DECIMAL(6,3) DEFAULT 0,
+                    last_accrual_date DATE,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    CONSTRAINT unique_user_leave_type_year UNIQUE (user_id_fk, leave_type_id_fk, year)
+                    CONSTRAINT unique_user_leave_year UNIQUE (user_id_fk, leave_type_id_fk, year)
                 )");
 
-            // Add indexes
-            ExecuteNonQuery(conn, "CREATE INDEX IF NOT EXISTS idx_leave_balances_user ON leave_balances(user_id_fk)");
-            ExecuteNonQuery(conn, "CREATE INDEX IF NOT EXISTS idx_leave_balances_year ON leave_balances(year)");
-            ExecuteNonQuery(conn, "CREATE INDEX IF NOT EXISTS idx_leave_balances_user_year ON leave_balances(user_id_fk, year)");
-        }
-
-        private static void CreateLeaveRequestsTable(NpgsqlConnection conn)
-        {
-            // Drop old leave_requests table if it exists (from previous version)
+            // 3. Leave Transactions - Audit trail of all leave operations
             ExecuteNonQuery(conn, @"
-                DO $$
-                BEGIN
-                    IF EXISTS (SELECT 1 FROM information_schema.columns
-                               WHERE table_name = 'leave_requests' AND column_name = 'request_id') THEN
-                        DROP TABLE IF EXISTS leave_requests CASCADE;
-                    END IF;
-                END $$;");
-
-            // Create new enhanced leave_requests table
-            ExecuteNonQuery(conn, @"
-                CREATE TABLE IF NOT EXISTS leave_requests (
-                    leave_request_id SERIAL PRIMARY KEY,
+                CREATE TABLE IF NOT EXISTS leave_transactions (
+                    transaction_id SERIAL PRIMARY KEY,
                     user_id_fk INTEGER NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
                     leave_type_id_fk INTEGER NOT NULL REFERENCES leave_types(leave_type_id),
-                    start_date DATE NOT NULL,
-                    end_date DATE NOT NULL,
-                    total_days DECIMAL(5,2) NOT NULL,
+                    balance_id_fk INTEGER REFERENCES leave_balances(balance_id) ON DELETE SET NULL,
+                    transaction_type VARCHAR(20) NOT NULL,
+                    days_amount DECIMAL(6,3) NOT NULL,
+                    hours_amount DECIMAL(6,2),
+                    start_date DATE,
+                    end_date DATE,
+                    submission_date DATE NOT NULL DEFAULT CURRENT_DATE,
                     reason TEXT,
-                    status VARCHAR(20) DEFAULT 'pending'
-                        CHECK (status IN ('pending', 'approved', 'rejected', 'cancelled')),
-                    requested_by INTEGER REFERENCES users(user_id),
-                    requested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    approved_by INTEGER REFERENCES users(user_id),
-                    approved_at TIMESTAMP,
-                    rejection_reason TEXT,
                     notes TEXT,
+                    created_by INTEGER REFERENCES users(user_id) ON DELETE SET NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    CONSTRAINT valid_transaction_type CHECK (
+                        transaction_type IN ('deduction', 'accrual', 'adjustment', 'carryover', 'hourly_conversion', 'reset')
+                    )
+                )");
+
+            // 4. Hourly Leave Accumulator - Tracks partial hours per employee
+            ExecuteNonQuery(conn, @"
+                CREATE TABLE IF NOT EXISTS hourly_leave_accumulator (
+                    accumulator_id SERIAL PRIMARY KEY,
+                    user_id_fk INTEGER NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+                    accumulated_hours DECIMAL(6,2) DEFAULT 0,
+                    last_conversion_date DATE,
+                    total_hours_converted DECIMAL(8,2) DEFAULT 0,
+                    total_days_deducted INTEGER DEFAULT 0,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    CONSTRAINT unique_user_hourly UNIQUE (user_id_fk)
+                )");
+
+            // 5. Long-Term Leave Registry - Stops accruals for 5-year leave, study leave, etc.
+            ExecuteNonQuery(conn, @"
+                CREATE TABLE IF NOT EXISTS long_term_leave_registry (
+                    registry_id SERIAL PRIMARY KEY,
+                    user_id_fk INTEGER NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+                    leave_type VARCHAR(50) NOT NULL,
+                    start_date DATE NOT NULL,
+                    end_date DATE,
+                    stop_accruals BOOLEAN DEFAULT TRUE,
+                    notes TEXT,
+                    created_by INTEGER REFERENCES users(user_id) ON DELETE SET NULL,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )");
 
-            // Add indexes
-            ExecuteNonQuery(conn, "CREATE INDEX IF NOT EXISTS idx_leave_requests_user ON leave_requests(user_id_fk)");
-            ExecuteNonQuery(conn, "CREATE INDEX IF NOT EXISTS idx_leave_requests_status ON leave_requests(status)");
-            ExecuteNonQuery(conn, "CREATE INDEX IF NOT EXISTS idx_leave_requests_dates ON leave_requests(start_date, end_date)");
-            ExecuteNonQuery(conn, "CREATE INDEX IF NOT EXISTS idx_leave_requests_user_dates ON leave_requests(user_id_fk, start_date, end_date)");
-        }
-
-        private static void CreateLeaveApprovalHistoryTable(NpgsqlConnection conn)
-        {
+            // 6. Leave Accrual Settings - System-wide configuration
             ExecuteNonQuery(conn, @"
-                CREATE TABLE IF NOT EXISTS leave_approval_history (
-                    history_id SERIAL PRIMARY KEY,
-                    leave_request_id_fk INTEGER NOT NULL REFERENCES leave_requests(leave_request_id) ON DELETE CASCADE,
-                    action VARCHAR(20) NOT NULL CHECK (action IN ('submitted', 'approved', 'rejected', 'cancelled', 'modified')),
-                    performed_by INTEGER REFERENCES users(user_id),
-                    performed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    previous_status VARCHAR(20),
-                    new_status VARCHAR(20),
-                    comments TEXT
+                CREATE TABLE IF NOT EXISTS leave_accrual_settings (
+                    setting_id INTEGER PRIMARY KEY DEFAULT 1,
+                    accrual_enabled BOOLEAN DEFAULT TRUE,
+                    accrual_check_time TIME DEFAULT '00:30:00',
+                    last_accrual_run TIMESTAMP,
+                    hours_per_day INTEGER DEFAULT 7,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )");
 
-            // Add indexes
-            ExecuteNonQuery(conn, "CREATE INDEX IF NOT EXISTS idx_leave_approval_history_request ON leave_approval_history(leave_request_id_fk)");
-            ExecuteNonQuery(conn, "CREATE INDEX IF NOT EXISTS idx_leave_approval_history_date ON leave_approval_history(performed_at)");
+            // Create indexes for leave management tables
+            ExecuteNonQuery(conn, "CREATE INDEX IF NOT EXISTS idx_leave_types_code ON leave_types(leave_type_code)");
+            ExecuteNonQuery(conn, "CREATE INDEX IF NOT EXISTS idx_leave_types_active ON leave_types(is_active)");
+
+            ExecuteNonQuery(conn, "CREATE INDEX IF NOT EXISTS idx_leave_balances_user ON leave_balances(user_id_fk)");
+            ExecuteNonQuery(conn, "CREATE INDEX IF NOT EXISTS idx_leave_balances_year ON leave_balances(year)");
+            ExecuteNonQuery(conn, "CREATE INDEX IF NOT EXISTS idx_leave_balances_type ON leave_balances(leave_type_id_fk)");
+            ExecuteNonQuery(conn, "CREATE INDEX IF NOT EXISTS idx_leave_balances_user_year ON leave_balances(user_id_fk, year)");
+
+            ExecuteNonQuery(conn, "CREATE INDEX IF NOT EXISTS idx_leave_transactions_user ON leave_transactions(user_id_fk)");
+            ExecuteNonQuery(conn, "CREATE INDEX IF NOT EXISTS idx_leave_transactions_date ON leave_transactions(submission_date)");
+            ExecuteNonQuery(conn, "CREATE INDEX IF NOT EXISTS idx_leave_transactions_type ON leave_transactions(transaction_type)");
+            ExecuteNonQuery(conn, "CREATE INDEX IF NOT EXISTS idx_leave_transactions_user_date ON leave_transactions(user_id_fk, submission_date)");
+
+            ExecuteNonQuery(conn, "CREATE INDEX IF NOT EXISTS idx_hourly_accumulator_user ON hourly_leave_accumulator(user_id_fk)");
+
+            ExecuteNonQuery(conn, "CREATE INDEX IF NOT EXISTS idx_long_term_leave_user ON long_term_leave_registry(user_id_fk)");
+            ExecuteNonQuery(conn, "CREATE INDEX IF NOT EXISTS idx_long_term_leave_dates ON long_term_leave_registry(start_date, end_date)");
+
+            // Insert default leave types
+            InsertDefaultLeaveTypes(conn);
+
+            // Ensure accrual settings row exists
+            ExecuteNonQuery(conn, @"
+                INSERT INTO leave_accrual_settings (setting_id) VALUES (1)
+                ON CONFLICT (setting_id) DO NOTHING");
+
+            System.Diagnostics.Debug.WriteLine("Leave management tables created/verified");
+        }
+
+        /// <summary>
+        /// Inserts the default leave types with accrual configurations
+        /// </summary>
+        private static void InsertDefaultLeaveTypes(NpgsqlConnection conn)
+        {
+            // ORDINARY: +1 day per 10 days worked (0.1/day), max 3/month, cumulative
+            ExecuteNonQuery(conn, @"
+                INSERT INTO leave_types (leave_type_code, leave_type_name_ar, leave_type_name_en,
+                    accrual_type, accrual_rate, accrual_cap_monthly, is_cumulative, annual_max,
+                    reset_on_year_start, deducts_from_balance, display_order)
+                VALUES ('ORDINARY', 'اجازة اعتيادية', 'Ordinary Leave',
+                    'daily', 0.1, 3.0, TRUE, NULL, FALSE, TRUE, 1)
+                ON CONFLICT (leave_type_code) DO NOTHING");
+
+            // SICK_FULL: +2.5 days/month, cumulative
+            ExecuteNonQuery(conn, @"
+                INSERT INTO leave_types (leave_type_code, leave_type_name_ar, leave_type_name_en,
+                    accrual_type, accrual_rate, accrual_cap_monthly, is_cumulative, annual_max,
+                    reset_on_year_start, deducts_from_balance, display_order)
+                VALUES ('SICK_FULL', 'اجازة مرضية براتب كامل', 'Sick Leave (Full Pay)',
+                    'monthly', 2.5, NULL, TRUE, NULL, FALSE, TRUE, 2)
+                ON CONFLICT (leave_type_code) DO NOTHING");
+
+            // SICK_HALF: +3.75 days/month, max 45/year, non-cumulative (resets Jan 1)
+            ExecuteNonQuery(conn, @"
+                INSERT INTO leave_types (leave_type_code, leave_type_name_ar, leave_type_name_en,
+                    accrual_type, accrual_rate, accrual_cap_monthly, is_cumulative, annual_max,
+                    reset_on_year_start, deducts_from_balance, display_order)
+                VALUES ('SICK_HALF', 'اجازة مرضية بنصف راتب', 'Sick Leave (Half Pay)',
+                    'monthly', 3.75, NULL, FALSE, 45.0, TRUE, TRUE, 3)
+                ON CONFLICT (leave_type_code) DO NOTHING");
+
+            // UNPAID: No accrual, max 5 days/month
+            ExecuteNonQuery(conn, @"
+                INSERT INTO leave_types (leave_type_code, leave_type_name_ar, leave_type_name_en,
+                    accrual_type, accrual_rate, accrual_cap_monthly, is_cumulative, annual_max,
+                    reset_on_year_start, max_days_per_month, deducts_from_balance, display_order)
+                VALUES ('UNPAID', 'اجازة بدون راتب', 'Unpaid Leave',
+                    'none', 0, NULL, FALSE, NULL, FALSE, 5, FALSE, 4)
+                ON CONFLICT (leave_type_code) DO NOTHING");
+
+            // FIVE_YEAR: Long-term leave type
+            ExecuteNonQuery(conn, @"
+                INSERT INTO leave_types (leave_type_code, leave_type_name_ar, leave_type_name_en,
+                    accrual_type, accrual_rate, is_cumulative, deducts_from_balance, display_order)
+                VALUES ('FIVE_YEAR', 'اجازة خمس سنوات', '5-Year Leave',
+                    'none', 0, FALSE, FALSE, 10)
+                ON CONFLICT (leave_type_code) DO NOTHING");
+
+            // STUDY: Long-term leave type
+            ExecuteNonQuery(conn, @"
+                INSERT INTO leave_types (leave_type_code, leave_type_name_ar, leave_type_name_en,
+                    accrual_type, accrual_rate, is_cumulative, deducts_from_balance, display_order)
+                VALUES ('STUDY', 'اجازة دراسية', 'Study Leave',
+                    'none', 0, FALSE, FALSE, 11)
+                ON CONFLICT (leave_type_code) DO NOTHING");
         }
 
         private static void CreateAnnouncementsTable(NpgsqlConnection conn)

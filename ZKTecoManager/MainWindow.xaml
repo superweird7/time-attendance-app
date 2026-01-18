@@ -374,6 +374,38 @@ Title="برنامج البصمة" Height="820" Width="1400"
                             </Grid>
                         </Button>
 
+                        <!-- Leave Management -->
+                        <Button x:Name="LeaveManagementButton" Style="{StaticResource FeatureCard}" Click="LeaveManagementButton_Click" Visibility="Collapsed">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Border Grid.Column="0" Width="80" Height="80" CornerRadius="16" Margin="20,0,20,0">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#8B5CF6" Offset="0"/>
+                                            <GradientStop Color="#EC4899" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <Border.Effect>
+                                        <DropShadowEffect Color="#8B5CF6" Opacity="0.3" ShadowDepth="0" BlurRadius="12"/>
+                                    </Border.Effect>
+                                    <TextBlock Text="🏖️" FontSize="36"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Foreground="White"/>
+                                </Border>
+
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="Leave Management" FontSize="18" FontWeight="Bold" Foreground="#1F2937"/>
+                                    <TextBlock Text="إدارة الإجازات" FontSize="14" Foreground="#8B5CF6" Margin="0,4,0,0" FontWeight="SemiBold"/>
+                                    <TextBlock Text="Track employee leaves" FontSize="11" Foreground="#6B7280" Margin="0,8,0,0" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </Grid>
+                        </Button>
+
                         <!-- Devices -->
                         <Button x:Name="DevicesButton" Style="{StaticResource FeatureCard}" Click="DevicesButton_Click">
                             <Grid>

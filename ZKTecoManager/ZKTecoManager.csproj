@@ -283,6 +283,7 @@
     <Compile Include="Data\Interfaces\IAttendanceRepository.cs" />
     <Compile Include="Data\Interfaces\IExceptionRepository.cs" />
     <Compile Include="Data\Interfaces\IMachineRepository.cs" />
+    <Compile Include="Data\Interfaces\ILeaveRepository.cs" />
     <Compile Include="Data\Repositories\BaseRepository.cs" />
     <Compile Include="Data\Repositories\DepartmentRepository.cs" />
     <Compile Include="Data\Repositories\UserRepository.cs" />
@@ -290,6 +291,7 @@
     <Compile Include="Data\Repositories\AttendanceRepository.cs" />
     <Compile Include="Data\Repositories\ExceptionRepository.cs" />
     <Compile Include="Data\Repositories\MachineRepository.cs" />
+    <Compile Include="Data\Repositories\LeaveRepository.cs" />
     <Compile Include="Infrastructure\ServiceLocator.cs" />
     <Compile Include="Infrastructure\DatabaseInitializer.cs" />
     <Compile Include="Infrastructure\CacheManager.cs" />
@@ -298,6 +300,9 @@
       <DependentUpon>BackupPreviewWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\Interfaces\IDashboardService.cs" />
+    <Compile Include="Services\Interfaces\ILeaveManagementService.cs" />
+    <Compile Include="Services\LeaveManagementService.cs" />
+    <Compile Include="Services\DailyLeaveAccrualService.cs" />
     <Compile Include="Services\DashboardService.cs" />
     <Compile Include="Services\WebDashboardService.cs" />
     <Compile Include="Services\WebSocketService.cs" />
@@ -308,6 +313,12 @@
     <Compile Include="Models\Sync\RemoteLocation.cs" />
     <Compile Include="Models\Sync\SyncResult.cs" />
     <Compile Include="Models\Sync\PendingChange.cs" />
+    <Compile Include="Models\Leave\LeaveType.cs" />
+    <Compile Include="Models\Leave\LeaveBalance.cs" />
+    <Compile Include="Models\Leave\LeaveTransaction.cs" />
+    <Compile Include="Models\Leave\HourlyLeaveAccumulator.cs" />
+    <Compile Include="Models\Leave\LongTermLeaveEntry.cs" />
+    <Compile Include="Models\Leave\LeaveAccrualSettings.cs" />
     <Compile Include="Data\Repositories\RemoteLocationRepository.cs" />
     <Compile Include="Infrastructure\SyncConverters.cs" />
     <Compile Include="SyncDashboardWindow.xaml.cs">
@@ -339,6 +350,21 @@
     </Compile>
     <Compile Include="SystemHealthWindow.xaml.cs">
       <DependentUpon>SystemHealthWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LeaveManagementWindow.xaml.cs">
+      <DependentUpon>LeaveManagementWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AddLeaveTransactionWindow.xaml.cs">
+      <DependentUpon>AddLeaveTransactionWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="EmployeeLeaveBalanceWindow.xaml.cs">
+      <DependentUpon>EmployeeLeaveBalanceWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AdjustBalanceDialog.xaml.cs">
+      <DependentUpon>AdjustBalanceDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LeaveReportsWindow.xaml.cs">
+      <DependentUpon>LeaveReportsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\LoadingOverlay.xaml.cs">
       <DependentUpon>LoadingOverlay.xaml</DependentUpon>
@@ -526,6 +552,26 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="SystemHealthWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LeaveManagementWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AddLeaveTransactionWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="EmployeeLeaveBalanceWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AdjustBalanceDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LeaveReportsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

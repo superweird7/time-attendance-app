@@ -34,15 +34,32 @@ Output directories: `bin\Debug\`, `bin\Release\`, `bin\x86\Debug\`, `bin\x86\Rel
 - **Device Communication**: zkemkeeper and ZKFPEngXControl COM libraries
 
 ### Application Flow
-1. `App.xaml.cs` - Application startup, initializes automatic backup service
+1. `App.xaml.cs` - Application startup, initializes services and database
 2. `LoginWindow.xaml.cs` - Authentication entry point (roles: superadmin, deptadmin)
 3. `MainWindow.xaml.cs` - Main navigation hub after login
 
+### Startup Sequence (App.xaml.cs)
+1. Load localization resources (English/Arabic)
+2. `DatabaseInitializer.Initialize()` - Create DB and schema if needed
+3. `AutomaticBackupService.Start()` - Start backup scheduler
+4. `AutoDownloadService.Start()` - Start device sync scheduler
+5. `CacheManager.Preload()` - Pre-fetch frequently accessed data
+6. Show `LoginWindow`
+
 ### Core Services (in ZKTecoManager/)
 - `AutomaticBackupService.cs` - Hourly backup scheduler, runs at configured time
+- `AutoDownloadService.cs` - Background automatic device log download
 - `BackupManager.cs` - SQL-based backup/restore (no pg_dump dependency)
 - `AuditLogger.cs` - Database audit trail for user actions
 - `DataValidator.cs` - Validation for badge numbers, emails, IPs, times
+
+### Infrastructure (in ZKTecoManager/Infrastructure/)
+- `DatabaseConfig.cs` - Connection string and pooling config (Min: 5, Max: 20 connections)
+- `DatabaseInitializer.cs` - Automatic schema creation on first run
+- `ServiceLocator.cs` - Lazy singleton DI for repositories and services
+- `BaseWindow.cs` - Base class for WPF windows
+- `PasswordHelper.cs` - Password hashing/validation
+- `CacheManager.cs` - Application cache with preload on startup
 
 ### Data Models (in ZKTecoManager/)
 - `User.cs` - Employee/user data
@@ -84,7 +101,7 @@ Device operations are primarily in `FromDeviceToPCWindow.cs` (download) and `Fro
 ## Key Patterns
 
 - **Repository Pattern**: Data access abstracted via interfaces in `Data/Interfaces/` and implementations in `Data/Repositories/`
-- **Service Layer**: Business logic in `Services/` (e.g., `DashboardService`, `RemoteSyncService`, `AutoSyncService`)
+- **Service Layer**: Business logic in `Services/` (e.g., `DashboardService`, `RemoteSyncService`, `AutoSyncService`, `WebSocketService`, `TelegramNotificationService`)
 - **Dependency Injection**: Simple DI via `ServiceLocator` in `Infrastructure/` (lazy singleton initialization)
 - **Centralized Configuration**: Database config in `Infrastructure/DatabaseConfig.cs`, connection string in App.config
 - **Pagination**: Server-side pagination with `PaginationParams` and `PagedResult<T>` in `Models/Pagination/`
@@ -123,6 +140,8 @@ Multi-location sync functionality in `Services/`:
 - `F5` - Open Devices
 - `F6` - Open Reports
 - `F7` - Open Sync Dashboard
+- `Ctrl++` / `Ctrl+-` - Increase/decrease font size
+- `Ctrl+0` - Reset font size
 - `Escape` - Exit application
 
 ### Data Windows (Employees, Departments, Shifts)

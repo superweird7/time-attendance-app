@@ -1,0 +1,243 @@
+<Window x:Class="ZKTecoManager.AddLeaveTransactionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="تسجيل إجازة - Add Leave" Height="550" Width="500"
+        WindowStartupLocation="CenterOwner"
+        WindowStyle="None"
+        Background="Transparent"
+        AllowsTransparency="True"
+        ResizeMode="NoResize"
+        FlowDirection="RightToLeft"
+        Loaded="Window_Loaded">
+
+    <Window.Resources>
+        <Style x:Key="FieldLabel" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#374151"/>
+            <Setter Property="Margin" Value="0,0,0,6"/>
+        </Style>
+
+        <Style x:Key="InputField" TargetType="Control">
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#D1D5DB"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+    </Window.Resources>
+
+    <Border CornerRadius="15" Background="White">
+        <Border.Effect>
+            <DropShadowEffect Color="#1F2937" Opacity="0.2" ShadowDepth="5" BlurRadius="20"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="55"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Border Grid.Row="0" CornerRadius="15,15,0,0" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                        <GradientStop Color="#10B981" Offset="0"/>
+                        <GradientStop Color="#059669" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+
+                <Grid>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="20,0" FlowDirection="LeftToRight">
+                        <TextBlock x:Name="HeaderIcon" Text="📋" FontSize="20" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <TextBlock x:Name="HeaderTitle" Text="تسجيل إجازة" FontSize="17" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <Button Content="✕" Click="CloseButton_Click"
+                            HorizontalAlignment="Left" VerticalAlignment="Center"
+                            Margin="12,0" Width="32" Height="32"
+                            Background="Transparent" Foreground="White"
+                            BorderThickness="0" Cursor="Hand" FontSize="14"/>
+                </Grid>
+            </Border>
+
+            <!-- Form Content -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="25,20">
+                <StackPanel>
+                    <!-- Employee Info (Read-only) -->
+                    <TextBlock Text="الموظف" Style="{StaticResource FieldLabel}"/>
+                    <Border Background="#F3F4F6" CornerRadius="8" Padding="12,10" Margin="0,0,0,15">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Name="EmployeeBadgeText" FontWeight="Bold" FontSize="14"/>
+                            <TextBlock Text=" - " FontSize="14"/>
+                            <TextBlock x:Name="EmployeeNameText" FontSize="14"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Regular Leave Section -->
+                    <Border x:Name="RegularLeaveSection" Background="#F9FAFB" CornerRadius="10" Padding="15" Margin="0,0,0,15">
+                        <StackPanel>
+                            <TextBlock Text="إجازة يومية" FontSize="14" FontWeight="Bold" Foreground="#059669" Margin="0,0,0,12"/>
+
+                            <!-- Leave Type -->
+                            <TextBlock Text="نوع الإجازة" Style="{StaticResource FieldLabel}"/>
+                            <ComboBox x:Name="LeaveTypeComboBox" Style="{StaticResource InputField}" Margin="0,0,0,12">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock>
+                                            <Run Text="{Binding LeaveTypeNameAr}"/>
+                                            <Run Text=" - "/>
+                                            <Run Text="{Binding LeaveTypeNameEn}" Foreground="#6B7280"/>
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+
+                            <!-- Date Range -->
+                            <Grid Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="15"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="من تاريخ" Style="{StaticResource FieldLabel}"/>
+                                    <DatePicker x:Name="StartDatePicker" Height="40" FontSize="14" SelectedDateChanged="DatePicker_SelectedDateChanged"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="إلى تاريخ" Style="{StaticResource FieldLabel}"/>
+                                    <DatePicker x:Name="EndDatePicker" Height="40" FontSize="14" SelectedDateChanged="DatePicker_SelectedDateChanged"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Calculated Days -->
+                            <Border Background="#ECFDF5" CornerRadius="6" Padding="10,8" Margin="0,0,0,12">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <TextBlock Text="عدد الأيام: " FontSize="14" Foreground="#065F46"/>
+                                    <TextBlock x:Name="CalculatedDaysText" Text="0" FontSize="16" FontWeight="Bold" Foreground="#059669"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Hourly Leave Section -->
+                    <Border x:Name="HourlyLeaveSection" Background="#EFF6FF" CornerRadius="10" Padding="15" Margin="0,0,0,15" Visibility="Collapsed">
+                        <StackPanel>
+                            <TextBlock Text="إجازة ساعية (تخصم من الاعتيادية)" FontSize="14" FontWeight="Bold" Foreground="#1D4ED8" Margin="0,0,0,12"/>
+
+                            <!-- Input Method Selection -->
+                            <TextBlock Text="طريقة الإدخال" Style="{StaticResource FieldLabel}"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                <RadioButton x:Name="TimeRangeRadio" Content="نطاق زمني" IsChecked="True" GroupName="HourlyMethod" Checked="HourlyMethodChanged" Margin="0,0,20,0"/>
+                                <RadioButton x:Name="DirectHoursRadio" Content="إدخال الساعات مباشرة" GroupName="HourlyMethod" Checked="HourlyMethodChanged"/>
+                            </StackPanel>
+
+                            <!-- Time Range Input -->
+                            <Grid x:Name="TimeRangePanel" Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="15"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="من الساعة" Style="{StaticResource FieldLabel}"/>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="10"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <ComboBox x:Name="StartHourComboBox" Grid.Column="0" Height="40" SelectionChanged="TimeRange_Changed"/>
+                                        <ComboBox x:Name="StartMinuteComboBox" Grid.Column="2" Height="40" SelectionChanged="TimeRange_Changed"/>
+                                    </Grid>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="إلى الساعة" Style="{StaticResource FieldLabel}"/>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="10"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <ComboBox x:Name="EndHourComboBox" Grid.Column="0" Height="40" SelectionChanged="TimeRange_Changed"/>
+                                        <ComboBox x:Name="EndMinuteComboBox" Grid.Column="2" Height="40" SelectionChanged="TimeRange_Changed"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Direct Hours Input -->
+                            <StackPanel x:Name="DirectHoursPanel" Visibility="Collapsed" Margin="0,0,0,12">
+                                <TextBlock Text="عدد الساعات" Style="{StaticResource FieldLabel}"/>
+                                <TextBox x:Name="DirectHoursTextBox" Style="{StaticResource InputField}" TextChanged="DirectHours_TextChanged"/>
+                            </StackPanel>
+
+                            <!-- Calculated Hours -->
+                            <Border Background="#DBEAFE" CornerRadius="6" Padding="10,8">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <TextBlock Text="الساعات: " FontSize="14" Foreground="#1E40AF"/>
+                                    <TextBlock x:Name="CalculatedHoursText" Text="0" FontSize="16" FontWeight="Bold" Foreground="#1D4ED8"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Submission Date for Hourly -->
+                            <StackPanel Margin="0,12,0,0">
+                                <TextBlock Text="تاريخ الإجازة" Style="{StaticResource FieldLabel}"/>
+                                <DatePicker x:Name="HourlyDatePicker" Height="40" FontSize="14"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Reason -->
+                    <TextBlock Text="السبب / الملاحظات" Style="{StaticResource FieldLabel}"/>
+                    <TextBox x:Name="ReasonTextBox"
+                             Height="70"
+                             FontSize="14"
+                             TextWrapping="Wrap"
+                             AcceptsReturn="True"
+                             VerticalScrollBarVisibility="Auto"
+                             Padding="10,8"
+                             BorderBrush="#D1D5DB"
+                             BorderThickness="1"/>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Footer Buttons -->
+            <Border Grid.Row="2" Background="#F9FAFB" CornerRadius="0,0,15,15" Padding="20,15">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" FlowDirection="LeftToRight">
+                    <Button Click="SaveButton_Click" Height="42" Padding="25,0" Cursor="Hand"
+                            Background="#10B981" Foreground="White" BorderThickness="0" FontSize="14" FontWeight="SemiBold">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="8">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="💾" Margin="0,0,8,0"/>
+                            <TextBlock Text="حفظ"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Click="CloseButton_Click" Height="42" Padding="25,0" Cursor="Hand" Margin="10,0,0,0"
+                            Background="#6B7280" Foreground="White" BorderThickness="0" FontSize="14" FontWeight="SemiBold">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="8">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                        <TextBlock Text="إلغاء"/>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

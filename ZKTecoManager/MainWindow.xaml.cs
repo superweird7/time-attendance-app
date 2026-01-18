@@ -117,6 +117,12 @@ namespace ZKTecoManager
                 AdminPanelButton.Visibility = Visibility.Visible;
             }
 
+            // Show leave management button for superadmin
+            if (CurrentUser.CanAccessLeaveManagement && !CurrentUser.IsLeaveAdmin)
+            {
+                LeaveManagementButton.Visibility = Visibility.Visible;
+            }
+
             // Configure feature visibility based on system access type
             if (CurrentUser.SystemAccessType == "leave_only")
             {
@@ -360,6 +366,20 @@ namespace ZKTecoManager
             catch (Exception ex)
             {
                 MessageBox.Show($"خطأ في فتح نافذة صحة النظام:\n{ex.Message}", "خطأ",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void LeaveManagementButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var leaveWindow = new LeaveManagementWindow { Owner = this };
+                leaveWindow.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"خطأ في فتح نافذة إدارة الإجازات:\n{ex.Message}", "خطأ",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
